@@ -95,7 +95,7 @@ export default function Login() {
                   <div className="w-full flex-1">
                     <div className="my-12 border-b text-center">
                       <div className="leading-none px-2 inline-block text-sm text-gray-600 tracking-wide font-medium bg-white transform translate-y-1/2">
-                        Login Ke SISFO Jurnal PKL
+                        Login Ke Pembimbing SISFO Jurnal PKL
                       </div>
                     </div>
 

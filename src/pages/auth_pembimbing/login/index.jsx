@@ -139,12 +139,6 @@ export default function Login() {
                         </svg>
                         <span className="ml-2">Sign In</span>
                       </button>
-                      <p className="mt-4 text-sm text-center text-gray-600">
-                        Belum punya akun?{" "}
-                        <Link href="/auth_user/register" className="text-green-500 hover:text-green-700 font-semibold">
-                          Daftar disini
-                        </Link>
-                      </p>
                       <p className="mt-6 text-xs text-gray-600 text-center">
                         I agree to abide by Cartesian Kinetics
                         <a href="#" className="border-b border-gray-500 border-dotted"> Terms of Service </a>

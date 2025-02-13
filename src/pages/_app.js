@@ -13,8 +13,9 @@ export default function App({ Component, pageProps, router }) {
     const isLoginUser = router.pathname === "/auth_user/login"; // Tambahkan kondisi untuk halaman login
     const isRegisUser = router.pathname === "/auth_user/register"; // Tambahkan kondisi untuk halaman login
     const isLoginPembimbing = router.pathname === "/auth_pembimbing/login"; // Tambahkan kondisi untuk halaman login
+    const isProfile = router.pathname === "/profile"; // Tambahkan kondisi untuk halaman login
 
-    if (isInsideAdmin || isInsidePelanggan || isLoginPage || isLoginUser || isRegisUser || isLoginPembimbing) {
+    if (isInsideAdmin || isInsidePelanggan || isLoginPage || isLoginUser || isRegisUser || isLoginPembimbing || isProfile) {
         // Perbarui kondisi untuk mengembalikan hanya komponen
         return <Component {...pageProps }
         />;

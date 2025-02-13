@@ -3,11 +3,24 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { BASE_URL } from "./layoutsAdmin/apiConfig";
+import { useCookies } from "react-cookie";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
   const router = useRouter();
+
+  useEffect(() => {
+    checkLoginStatus();
+  }, [cookies.token]);
+
+  const checkLoginStatus = () => {
+    const token = cookies.token;
+    console.log('Token:', token);
+    setIsLoggedIn(!!token);
+  };
 
   // useEffect dan fungsi fetch data dikomentari
   /*
@@ -31,6 +44,12 @@ export default function Navbar() {
 
   const toggleProfile = () => {
     setIsProfileOpen(!isProfileOpen);
+  };
+
+  const handleLogout = () => {
+    removeCookie("token", { path: "/" });
+    setIsLoggedIn(false);
+    router.push('/auth_user/login');
   };
 
   return (
@@ -116,18 +135,39 @@ export default function Navbar() {
               
               {isProfileOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                  <Link
-                    href="/auth_user/login"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    href="/auth_user/register"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Register
-                  </Link>
+                  {isLoggedIn ? (
+                    // Menu untuk user yang sudah login
+                    <>
+                      <Link
+                        href="/profile"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        My Profile
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Logout
+                      </button>
+                    </>
+                  ) : (
+                    // Menu untuk user yang belum login
+                    <>
+                      <Link
+                        href="/auth_user/login"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Login
+                      </Link>
+                      <Link
+                        href="/auth_user/register"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Register
+                      </Link>
+                    </>
+                  )}
                 </div>
               )}
             </div>

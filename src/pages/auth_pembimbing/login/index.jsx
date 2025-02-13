@@ -95,7 +95,7 @@ export default function Login() {
                   <div className="w-full flex-1">
                     <div className="my-12 border-b text-center">
                       <div className="leading-none px-2 inline-block text-sm text-gray-600 tracking-wide font-medium bg-white transform translate-y-1/2">
-                        Login Ke SISFO Jurnal PKL
+                        Login Ke Pembimbing SISFO Jurnal PKL
                       </div>
                     </div>
 
@@ -139,12 +139,6 @@ export default function Login() {
                         </svg>
                         <span className="ml-2">Sign In</span>
                       </button>
-                      <p className="mt-4 text-sm text-center text-gray-600">
-                        Belum punya akun?{" "}
-                        <Link href="/auth_user/register" className="text-green-500 hover:text-green-700 font-semibold">
-                          Daftar disini
-                        </Link>
-                      </p>
                       <p className="mt-6 text-xs text-gray-600 text-center">
                         I agree to abide by Cartesian Kinetics
                         <a href="#" className="border-b border-gray-500 border-dotted"> Terms of Service </a>

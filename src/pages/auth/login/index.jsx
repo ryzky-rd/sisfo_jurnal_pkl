@@ -42,7 +42,7 @@ export default function Login() {
       });
 
       setCookie("token", response.data.token, { path: "/" });
-      router.push("/admin/paket");
+      router.push("/admin/setting");
     } catch (error) {
       console.error("Login error:", error);
       showToastMessage();

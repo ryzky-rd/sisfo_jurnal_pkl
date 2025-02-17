@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import { BASE_URL } from "./layoutsAdmin/apiConfig";
 import { useCookies } from "react-cookie";
+import Swal from 'sweetalert2';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -108,17 +109,61 @@ export default function Navbar() {
             <Link
               href={"/pengisian_jurnal"}
               className={`nav-link ${
-                router.pathname === "/pengisian_jurnal"
-                  ? "font-bold text-white underline"
-                  : ""
+                router.pathname === "/pengisian_jurnal" ? "font-bold text-white underline" : ""
               } px-4 py-2 text-sm font-bold bg-transparent rounded-lg hover:text-white focus:underline underline-offset-8 focus:text-white text-center lg:text-left`}
+              onClick={!isLoggedIn ? (e) => { 
+                e.preventDefault(); 
+                Swal.fire({
+                  title: 'Akses Ditolak',
+                  text: 'Anda harus login untuk mengakses Pengisian Jurnal.',
+                  icon: 'warning',
+                  confirmButtonText: 'OK',
+                  showCloseButton: true,
+                  closeButtonHtml: '<span aria-label="close">&times;</span>',
+                });
+              } : undefined}
             >
               PENGISIAN JURNAL
             </Link>
+
+            {/* Menu Profile untuk Mobile */}
+            <div className="lg:hidden border-t border-gray-700 mt-4 pt-4">
+              {isLoggedIn ? (
+                <>
+                  <Link
+                    href="/profile"
+                    className="block px-4 py-2 text-sm font-bold text-white hover:bg-gray-700 text-center"
+                  >
+                    MY PROFILE
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full px-4 py-2 text-sm font-bold text-white hover:bg-gray-700 text-center"
+                  >
+                    LOGOUT
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/auth_user/login"
+                    className="block px-4 py-2 text-sm font-bold text-white hover:bg-gray-700 text-center"
+                  >
+                    LOGIN
+                  </Link>
+                  <Link
+                    href="/auth_user/register"
+                    className="block px-4 py-2 text-sm font-bold text-white hover:bg-gray-700 text-center"
+                  >
+                    REGISTER
+                  </Link>
+                </>
+              )}
+            </div>
           </div>
 
-          {/* Profile di kanan */}
-          <div className="flex items-center justify-center p-4 lg:justify-end">
+          {/* Profile di kanan - Hanya tampil di desktop */}
+          <div className="hidden lg:flex items-center justify-center p-4 lg:justify-end">
             <div className="relative">
               <button
                 onClick={toggleProfile}

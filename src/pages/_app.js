@@ -32,9 +32,7 @@ export default function App({ Component, pageProps, router }) {
         content = "Sistem Informasi Jurnal PKL SMKN 1 KOTA CIREBON" /
         >
         <
-        /Head>{" "} <
-        NextTopLoader color = "#A8CF45" / >
-        <
+        /Head>{" "}  <
         Navbar / >
         <
         Component {...pageProps }

@@ -2,27 +2,45 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Link from "next/link";
 import { BASE_URL } from "../components/layoutsAdmin/apiConfig";
+import Swal from 'sweetalert2';
 
 export default function Footer() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [setting, setSetting] = useState(""); // State untuk menyimpan nomor WA
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${BASE_URL}/api/setting`);
-        setSetting(response.data.data[0]);
-      } catch (error) {
-        console.error("Error fetching data layanan:", error);
-        setError(error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await axios.get(`${BASE_URL}/api/setting`);
+  //       setSetting(response.data.data[0]);
+  //     } catch (error) {
+  //       console.error("Error fetching data layanan:", error);
+  //       setError(error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchData();
-  }, []);
+  //   fetchData();
+  // }, []);
+
+  const handlePengisianJurnalClick = () => {
+    const isLoggedIn = false; // Ganti dengan logika pengecekan login yang sesuai
+    if (!isLoggedIn) {
+      Swal.fire({
+        title: 'Akses Ditolak',
+        text: 'Anda harus login untuk mengakses halaman ini.',
+        icon: 'warning',
+        confirmButtonText: 'OK',
+        showCloseButton: true,
+        closeButtonHtml: '<span style="font-size: 30px;">&times;</span>'
+      });
+    } else {
+      // Arahkan ke halaman pengisian jurnal
+      window.location.href = '/pengisian_jurnal';
+    }
+  };
 
   return (
     <>
@@ -45,9 +63,8 @@ export default function Footer() {
                     {" "}
                     Home{" "}
                   </Link>
-                  <Link href={"/paket"} className="hover:opacity-75">
-                    {" "}
-                    Pengisian Jurnal{" "}
+                  <Link href="#" onClick={handlePengisianJurnalClick} className="hover:opacity-75">
+                    {" "}Pengisian Jurnal{" "}
                   </Link>
                 </nav>
               </div>

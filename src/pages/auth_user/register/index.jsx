@@ -82,10 +82,10 @@ export default function Register() {
             ></div>
           </div>
           <div
-            className="w-full lg:w-1/2 xl:w-5/12 p-6 sm:p-12"
+            className="w-full lg:w-5/12 xl:w-5/12 p-6 sm:p-12"
             data-aos="fade-left"
           >
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center sm:mt-12 md:mt-0">
               <div className="text-center">
                 <h1 className="text-2xl xl:text-4xl font-extrabold text-black">
                   Pusat Daftar Akun

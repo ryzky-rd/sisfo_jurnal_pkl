@@ -6,28 +6,28 @@ function ButtonWa() {
   const [setting, setSetting] = useState(""); // State untuk menyimpan nomor WA
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${BASE_URL}/api/setting`);
-        setSetting(response.data.data[0]);
-      } catch (error) {
-        console.error("Error fetching data layanan:", error);
-        setError(error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await axios.get(`${BASE_URL}/api/setting`);
+  //       setSetting(response.data.data[0]);
+  //     } catch (error) {
+  //       console.error("Error fetching data layanan:", error);
+  //       setError(error);
+  //     }
+  //   };
 
-    fetchData();
-  }, []);
+  //   fetchData();
+  // }, []);
 
-  const handleSubmit = () => {
-    window.location.href = `https://wa.me/62${setting.wa}`;
-  };
+  // const handleSubmit = () => {
+  //   window.location.href = `https://wa.me/62${setting.wa}`;
+  // };
 
   return (
     <div>
       <button
-        onClick={handleSubmit}
+        // onClick={handleSubmit}
         id="my-button"
         aria-label="Hubungi melalui WhatsApp" // {{ edit_1 }}
         className="fixed bottom-5 right-5 w-12 h-12 rounded-full bg-[#f97316] text-white flex items-center justify-center sm:bottom-10 sm:right-20 sm:w-16 sm:h-16"

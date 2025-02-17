@@ -83,9 +83,9 @@ export default function Login() {
       <Head>
         <title>Login</title>
       </Head>
-      <div className="h-screen w-full bg-gray-100 text-gray-900 flex justify-center overflow-hidden">
+      <div className="h-screen w-full bg-gray-100 text-gray-900 flex justify-center sm:overflow-hidden">
         <div className="w-full h-screen bg-white flex justify-center flex-1">
-          <div className="lg:w-1/2 xl:w-5/12 p-6 sm:p-12" data-aos="fade-right">
+          <div className="lg:w-1/2 xl:w-5/12 p-6 sm:p-10" data-aos="fade-right">
             <div className="flex justify-center h-full">
               <div className="w-full max-w-md flex flex-col justify-center">
                 <div className="flex justify-center">

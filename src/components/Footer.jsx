@@ -7,23 +7,30 @@ import Swal from 'sweetalert2';
 export default function Footer() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [setting, setSetting] = useState(""); // State untuk menyimpan nomor WA
+  const [setting, setSetting] = useState({
+    nama_sekolah: "",
+    alamat: "",
+    email: "",
+    wa: "",
+    telp: "",
+    url_gmaps: "",
+  });
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await axios.get(`${BASE_URL}/api/setting`);
-  //       setSetting(response.data.data[0]);
-  //     } catch (error) {
-  //       console.error("Error fetching data layanan:", error);
-  //       setError(error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/api/setting`);
+        setSetting(response.data.data[0]);
+      } catch (error) {
+        console.error("Error fetching data setting:", error);
+        setError(error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  //   fetchData();
-  // }, []);
+    fetchData();
+  }, []);
 
   const handlePengisianJurnalClick = () => {
     const isLoggedIn = false; // Ganti dengan logika pengecekan login yang sesuai
@@ -73,11 +80,10 @@ export default function Footer() {
                 <p className="font-bold text-white">Contact Us</p>
                 <nav className="flex flex-col mt-4 space-y-2 text-sm text-white">
                   <p className="hover:opacity-75">
-                    {" "}
-                    Jl. Perjuangan By Pass Sunyaragi, Cirebon, Indonesia 45132
+                    {setting.alamat}
                   </p>
-                  <p className="hover:opacity-75"> Email: info@smkn1-cirebon.sch.id</p>
-                  <p className="hover:opacity-75"> Telp & Fax: +62-0231-480202 </p>
+                  <p className="hover:opacity-75"> Email: {setting.email}</p>
+                  <p className="hover:opacity-75"> Telp & Fax: {setting.telp} </p>
                 </nav>
               </div>
             </div>
@@ -87,9 +93,9 @@ export default function Footer() {
               <p className="font-bold text-white">Lokasi Kami</p>
               <div className="mt-4">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3962.2830232659376!2d108.53415787338668!3d-6.735285965852508!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6f1df0e55b2ed3%3A0x51cf481547b4b319!2sSMK%20Negeri%201%20Cirebon!5e0!3m2!1sid!2sid!4v1738553713562!5m2!1sid!2sid"
+                  src={setting.url_gmaps}
                   className="w-full h-64"
-                  title="Peta Lokasi Kami" // Menambahkan judul bingkai
+                  title="Peta Lokasi Kami"
                 ></iframe>
               </div>
             </div>

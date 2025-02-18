@@ -39,28 +39,6 @@ function Kontak_Kami() {
   return (
     <div className="grid text-start px-auto mt-12">
       <div 
-        className="grid grid-flow-row px-5 py-4 text-start lg:px-10"
-        data-aos="fade-right"
-      >
-        <h2
-          className="text-lg font-semibold flex items-center"
-          onClick={toggleWcu}
-          style={{ justifyContent: "space-between" }}
-        >
-          MENGAPA KAMI?
-          <span>{isOpenWcu ? <FaChevronUp /> : <FaChevronDown />}</span>
-        </h2>
-        <div
-          ref={wcuContentRef}
-          style={getDropdownStyle(isOpenWcu, wcuContentRef)}
-        >
-          <p className="pt-4">1. Pengalaman lebih dari 5 tahun di bidang pengembangan web</p>
-          <p className="pt-4">2. Tim profesional yang berdedikasi</p>
-          <p className="pt-4">3. Solusi yang disesuaikan dengan kebutuhan klien</p>
-          <p className="pt-4">4. Dukungan teknis yang responsif</p>
-        </div>
-      </div>
-      <div 
         className="grid px-5 py-8 text-start lg:px-10"
         data-aos="fade-right"
         data-aos-delay="200"

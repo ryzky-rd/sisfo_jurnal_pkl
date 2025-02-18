@@ -40,12 +40,24 @@ export default function Login() {
         email,
         password,
       });
-
+      
+      // Tambahkan logging untuk debugging
+      console.log('Response:', response.data);
+      
       setCookie("token", response.data.token, { path: "/" });
       router.push("/admin/setting");
     } catch (error) {
-      console.error("Login error:", error);
-      showToastMessage();
+      // Perbaikan error handling
+      console.error("Login error:", error.response?.data || error.message);
+      if (error.response?.status === 401) {
+        toast.error("Email atau password salah!", {
+          position: "top-right",
+        });
+      } else {
+        toast.error("Terjadi kesalahan pada server", {
+          position: "top-right",
+        });
+      }
     }
   };
   const showToastMessage = () => {

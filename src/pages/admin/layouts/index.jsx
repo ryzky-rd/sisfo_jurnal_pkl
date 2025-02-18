@@ -16,7 +16,7 @@ export default function AdminLayout({ children }) {
     <>
       <Sidebar />
       <div className="relative md:ml-64 bg-blueGray-100">
-        <div className="bg-blue-500">
+        <div className="bg-gray-800">
         {/* Header */}
         <HeaderStats />
         </div>

@@ -9,10 +9,10 @@ import { auto } from "@popperjs/core";
 import { parseCookies } from "nookies";
 import { useRouter } from "next/router";
 import { BASE_URL } from "../../../components/layoutsAdmin/apiConfig";
-const Pelanggan = ({ isLoggedIn }) => {
-  const [allpelanggan, setAllPelanggan] = useState([]); // State untuk menyimpan semua data
+const Siswa = ({ isLoggedIn }) => {
+  const [allSiswa, setAllSiswa] = useState([]); // State untuk menyimpan semua data
   const router = useRouter();
-  const [pelanggan, setPelanggan] = useState([]);
+  const [siswa, setSiswa] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -27,45 +27,52 @@ const Pelanggan = ({ isLoggedIn }) => {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   // add data
   const [formData, setFormData] = useState({
-    nama: "",
-    alamat: "",
-    telp: "",
+    nama_lengkap: "",
+    nis: null,
+    nisn: null,
+    id_kelas: "",
+    id_jurusan: "",
     email: "",
     password: "",
   });
 
   // update data
   const [updateData, setUpdateData] = useState({
-    nama: "",
-    alamat: "",
-    telp: "",
+    id: "",
+    nama_lengkap: "",
+    nis: null,
+    nisn: null,
+    id_kelas: "",
+    id_jurusan: "",
     email: "",
     password: "",
   });
 
+  const [kelasList, setKelasList] = useState([]); // Tambahkan state untuk daftar kelas
+  const [jurusanList, setJurusanList] = useState([]); // Tambahkan state untuk daftar jurusan
+
   const fetchData = async () => {
     setLoading(true);
     try {
-      // Ambil semua data sekali saja
-      const response = await axios.get(`${BASE_URL}/api/pelanggan`);
-      setAllPelanggan(response.data);
+      const response = await axios.get(`${BASE_URL}/api/siswa`);
+      // Pastikan response.data adalah array
+      const data = Array.isArray(response.data) ? response.data : response.data.data;
+      setAllSiswa(data);
 
-      // Filter data berdasarkan pencarian dan pagination
-      const filteredData = response.data.filter((item) =>
-        item.nama.toLowerCase().includes(searchTerm.toLowerCase())
+      const filteredData = data.filter((item) =>
+        item.nama_lengkap.toLowerCase().includes(searchTerm.toLowerCase())
       );
 
-      // Update data untuk ditampilkan berdasarkan pagination
       const paginatedData = filteredData.slice(
         (currentPage - 1) * pageSize,
         currentPage * pageSize
       );
 
-      setPelanggan(paginatedData);
+      setSiswa(paginatedData);
       setTotalCount(filteredData.length);
       setTotalPages(Math.ceil(filteredData.length / pageSize));
     } catch (error) {
-      console.error("Error fetching data paket:", error);
+      console.error("Error fetching data siswa:", error);
       setError(error.response ? error.response.data : error);
     } finally {
       setLoading(false);
@@ -89,6 +96,46 @@ const Pelanggan = ({ isLoggedIn }) => {
     });
   };
 
+  // Tambahkan fungsi untuk mengambil data kelas
+  const fetchKelas = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/kelas`);
+      setKelasList(response.data);
+    } catch (error) {
+      console.error("Error fetching kelas:", error);
+    }
+  };
+
+  // Panggil fetchKelas saat komponen dimount
+  useEffect(() => {
+    fetchKelas();
+  }, []);
+
+  // Tambahkan fungsi untuk mengambil data jurusan
+  const fetchJurusan = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/jurusan`);
+      setJurusanList(response.data);
+    } catch (error) {
+      console.error("Error fetching jurusan:", error);
+    }
+  };
+
+  // Panggil fetchJurusan saat komponen dimount
+  useEffect(() => {
+    fetchJurusan();
+  }, []);
+
+  const getKelasName = (id) => {
+    const kelas = kelasList.find((k) => k.id === id);
+    return kelas ? kelas.nama_kelas : "Kelas tidak tersedia";
+  };
+
+  const getJurusanName = (id) => {
+    const jurusan = jurusanList.find((j) => j.id === id);
+    return jurusan ? jurusan.nama_jurusan : "Jurusan tidak tersedia";
+  };
+
   if (error) {
     return (
       <div className="text-center text-red-500">Error: {error.message}</div>
@@ -101,7 +148,7 @@ const Pelanggan = ({ isLoggedIn }) => {
   const handleDelete = async () => {
     const id = itemIdToDelete;
     try {
-      const response = await fetch(`${BASE_URL}/api/pelanggan/${id}`, {
+      const response = await fetch(`${BASE_URL}/api/siswa/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -112,7 +159,7 @@ const Pelanggan = ({ isLoggedIn }) => {
         throw new Error("Gagal menghapus data");
       }
 
-      setPelanggan(pelanggan.filter((item) => item.id !== id));
+      setSiswa(siswa.filter((item) => item.id !== id));
       showToastMessage("Data berhasil dihapus!");
     } catch (error) {
       console.error("Terjadi kesalahan:", error);
@@ -141,37 +188,36 @@ const Pelanggan = ({ isLoggedIn }) => {
 
     try {
       const formDataToSend = {
-        nama: formData.nama,
-        alamat: formData.alamat,
-        telp: formData.telp,
+        nama_lengkap: formData.nama || formData.nama_lengkap,
+        nis: null,
+        nisn: null,
+        id_kelas: parseInt(formData.id_kelas),
+        id_jurusan: parseInt(formData.id_jurusan),
         email: formData.email,
         password: formData.password,
       };
 
-      const response = await fetch(`${BASE_URL}/api/pelanggan`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formDataToSend),
-      });
+      console.log('Data yang dikirim:', formDataToSend);
 
-      if (response.ok) {
+      const response = await axios.post(`${BASE_URL}/api/siswa`, formDataToSend);
+
+      if (response.status === 200 || response.status === 201) {
         showToastMessage("Data berhasil ditambahkan!");
         setShowModal(false);
         setFormData({
-          nama: "",
-          alamat: "",
-          telp: "",
+          nama_lengkap: "",
+          nis: null,
+          nisn: null,
+          id_kelas: "",
+          id_jurusan: "",
           email: "",
           password: "",
         });
         fetchData();
-      } else {
-        console.error("Gagal mengirim data.");
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error:", error.response?.data || error.message);
+      toast.error(error.response?.data?.message || "Gagal mengirim data");
     }
   };
 
@@ -179,41 +225,52 @@ const Pelanggan = ({ isLoggedIn }) => {
   const handleEdit = (item) => {
     setUpdateData({
       id: item.id,
-      nama: item.nama,
-      alamat: item.alamat,
-      telp: item.telp,
+      nama_lengkap: item.nama_lengkap,
+      nis: item.nis,
+      nisn: item.nisn,
+      id_kelas: item.id_kelas,
+      id_jurusan: item.id_jurusan,
       email: item.email,
       password: item.password,
     });
     setShowUpdateModal(true);
   };
 
-  // console.log(updateData);
-
   const handleUpdate = async (e) => {
     e.preventDefault();
-
     try {
-      const response = await fetch(
-        `${BASE_URL}/api/pelanggan/${updateData.id}`,
+      const dataToSend = {
+        nama_lengkap: updateData.nama_lengkap,
+        nis: updateData.nis,
+        nisn: updateData.nisn,
+        id_kelas: parseInt(updateData.id_kelas),
+        id_jurusan: parseInt(updateData.id_jurusan),
+        email: updateData.email,
+        password: updateData.password,
+      };
+
+      // Ubah dari PUT ke PATCH
+      const response = await axios.patch(
+        `${BASE_URL}/api/siswa/${updateData.id}`,
+        dataToSend,
         {
-          method: "PATCH",
           headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updateData),
+            'Content-Type': 'application/json',
+          }
         }
       );
-
-      if (response.ok) {
+      
+      if (response.status === 200 || response.status === 201) {
         showToastMessage("Data berhasil diupdate!");
         setShowUpdateModal(false);
-        fetchData();
-      } else {
-        console.error("Gagal mengupdate data.");
+        fetchData(); // Refresh data setelah update
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error updating data:", error);
+      toast.error(
+        error.response?.data?.message || 
+        "Gagal mengupdate data. Silakan coba lagi."
+      );
     }
   };
 
@@ -228,7 +285,7 @@ const Pelanggan = ({ isLoggedIn }) => {
   return (
     <>
       <Head>
-        <title>Data Pelanggan</title>
+        <title>Data Siswa</title>
       </Head>
       <AdminLayout>
         <ToastContainer />
@@ -236,139 +293,165 @@ const Pelanggan = ({ isLoggedIn }) => {
         <div className="flex items-center justify-between mb-4 lg:-mt-48 md:-mt-48">
           <input
             type="text"
-            placeholder="Cari Pelanggan..."
+            placeholder="Cari Siswa..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-48 md:w-56 lg:w-72 rounded-xl border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
           />
           <button
             onClick={toggleModal}
-            className="flex items-center gap-1 px-4 py-2 text-white rounded-md shadow-sm bg-orange-400 hover:bg-orange-600"
+            className="flex items-center gap-1 px-4 py-2 text-white rounded-md shadow-sm bg-amber-400 hover:bg-amber-500"
           >
             <i className="fa-solid fa-plus"></i>
-            Pelanggan
+            Siswa
           </button>
         </div>
 
-        <div className="flex flex-col overflow-x-auto bg-white rounded-xl">
+        <div className="flex flex-col bg-white rounded-xl">
           <div className="sm:-mx-6 lg:-mx-8">
             <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
-              <div className="overflow-x-auto">
-                <table className="min-w-full text-sm font-light text-left">
-                  <thead className="font-medium border-b dark:border-neutral-500">
-                    <tr>
-                      <th scope="col" className="px-6 py-4">
-                        Nama
-                      </th>
-                      <th scope="col" className="px-6 py-4">
-                        Alamat
-                      </th>
-                      <th scope="col" className="px-6 py-4">
-                        Telp
-                      </th>
-                      <th scope="col" className="px-6 py-4">
-                        Email
-                      </th>
-                      <th scope="col" className="px-6 py-4">
-                        Action
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {pelanggan && pelanggan.length > 0 ? (
-                      pelanggan.map((item) => (
-                        <tr
-                          className="border-b dark:border-neutral-500"
-                          key={item.id}
-                        >
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {item["nama"] || "Nama tidak tersedia"}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {item["alamat"] || "Alamat tidak tersedia"}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {item["telp"] || "Telepon tidak tersedia"}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {item["email"] || "Email tidak tersedia"}
-                          </td>
-                          <td className="flex items-center gap-1 px-6 py-4 mt-8 whitespace-nowrap">
-                            {/* Tombol update */}
-                            <button onClick={() => handleEdit(item)}>
-                              <div
-                                className="items-center w-auto px-5 py-2 mb-2 tracking-wider text-white rounded-full shadow-sm bg-orange-400 hover:bg-orange-600"
-                                aria-label="edit"
-                              >
-                                <i className="fa-solid fa-pen"></i>
-                              </div>
-                            </button>
+              <div className="overflow-x-auto lg:overflow-x-hidden">
+                {/* Tampilan desktop */}
+                <div className="hidden md:block">
+                  <table className="min-w-full text-sm font-light text-left">
+                    <thead className="font-medium border-b dark:border-neutral-500">
+                      <tr>
+                        <th scope="col" className="px-6 py-4 lg:w-[20%]">Nama Lengkap</th>
+                        <th scope="col" className="px-6 py-4 lg:w-[10%]">Kelas</th>
+                        <th scope="col" className="px-6 py-4 lg:w-[15%]">Jurusan</th>
+                        <th scope="col" className="px-6 py-4 lg:w-[20%]">Email</th>
+                        <th scope="col" className="px-6 py-4 lg:w-[15%]">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {siswa && siswa.length > 0 ? (
+                        siswa.map((item) => (
+                          <tr className="border-b dark:border-neutral-500" key={item.id}>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {item.nama_lengkap || "Nama tidak tersedia"}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {getKelasName(item.id_kelas)}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {getJurusanName(item.id_jurusan)}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {item.email || "Email tidak tersedia"}
+                            </td>
+                            <td className="flex items-center gap-1 px-6 py-4 whitespace-nowrap">
+                              {/* Tombol update */}
+                              <button onClick={() => handleEdit(item)}>
+                                <div
+                                  className="items-center w-auto px-5 py-2 mb-2 tracking-wider text-white rounded-full shadow-sm bg-amber-400 hover:bg-amber-500"
+                                  aria-label="edit"
+                                >
+                                  <i className="fa-solid fa-pen"></i>
+                                </div>
+                              </button>
 
-                            {/* Tombol delete */}
+                              {/* Tombol delete */}
+                              <button
+                                onClick={() => {
+                                  toggleModalDelete();
+                                  setItemIdToDelete(item.id);
+                                }}
+                                className="items-center w-auto px-5 py-2 mb-2 tracking-wider text-white rounded-full shadow-sm bg-amber-400 hover:bg-amber-500"
+                                aria-label="delete"
+                              >
+                                <i className="fa-solid fa-trash"></i>
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={7} className="text-center py-4">
+                            Data tidak tersedia
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Tampilan mobile */}
+                <div className="grid grid-cols-1 gap-4 md:hidden">
+                  {siswa && siswa.length > 0 ? (
+                    siswa.map((item) => (
+                      <div key={item.id} className="p-4 bg-white rounded-lg shadow">
+                        <div className="space-y-2">
+                          <div className="flex justify-between">
+                            <span className="font-bold">Nama:</span>
+                            <span>{item.nama_lengkap || "Nama tidak tersedia"}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="font-bold">Kelas:</span>
+                            <span>{getKelasName(item.id_kelas)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="font-bold">Jurusan:</span>
+                            <span>{getJurusanName(item.id_jurusan)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="font-bold">Email:</span>
+                            <span>{item.email || "Email tidak tersedia"}</span>
+                          </div>
+                          <div className="flex justify-center gap-2 mt-4">
+                            <button 
+                              onClick={() => handleEdit(item)}
+                              className="px-4 py-2 text-white rounded-full bg-amber-400 hover:bg-amber-500"
+                            >
+                              <i className="fa-solid fa-pen"></i>
+                            </button>
                             <button
                               onClick={() => {
                                 toggleModalDelete();
                                 setItemIdToDelete(item.id);
-                                // Simpan ID item yang akan dihapus
                               }}
-                              className="items-center w-auto px-5 py-2 mb-2 tracking-wider text-white rounded-full shadow-sm bg-orange-400 hover:bg-orange-600"
-                              aria-label="delete"
+                              className="px-4 py-2 text-white rounded-full bg-amber-400 hover:bg-amber-500"
                             >
                               <i className="fa-solid fa-trash"></i>
                             </button>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan={5} className="text-center py-4">
-                          Data tidak tersedia
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="p-4 text-center">
+                      Data tidak tersedia
+                    </div>
+                  )}
+                </div>
 
-                {/* pagination */}
-                <div className="flex justify-center gap-5 my-4">
+                {/* Pagination */}
+                <div className="flex justify-center gap-2 my-4">
                   <button
-                    onClick={() =>
-                      setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))
-                    }
+                    onClick={() => setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))}
                     disabled={currentPage === 1}
-                    className="px-3 py-1 bg-gray-200 rounded-md hover:bg-gray-400"
+                    className="px-3 py-1 text-sm bg-gray-200 rounded-md hover:bg-gray-400"
                   >
                     Prev
                   </button>
-                  <div className="flex">
-                    {Array.from(
-                      { length: Math.min(totalPages, 5) },
-                      (_, index) => (
-                        <button
-                          key={index}
-                          onClick={
-                            () => setCurrentPage(firstPage + index) // Memperbarui halaman berdasarkan indeks dan halaman pertama yang ditampilkan
-                          }
-                          className={`mx-1 px-3 py-1 rounded-md ${
-                            currentPage === firstPage + index
-                              ? "bg-orange-400 hover:bg-orange-600 text-white"
-                              : "bg-gray-200 hover:bg-gray-400"
-                          }`}
-                        >
-                          {firstPage + index}{" "}
-                          {/* Menggunakan halaman pertama yang ditampilkan */}
-                        </button>
-                      )
-                    )}
+                  <div className="flex gap-1">
+                    {Array.from({ length: Math.min(totalPages, 5) }, (_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setCurrentPage(firstPage + index)}
+                        className={`mx-1 px-3 py-1 text-sm rounded-md ${
+                          currentPage === firstPage + index
+                            ? "bg-amber-400 hover:bg-amber-500 text-white"
+                            : "bg-gray-200 hover:bg-gray-400"
+                        }`}
+                      >
+                        {firstPage + index}
+                      </button>
+                    ))}
                   </div>
                   <button
-                    onClick={() =>
-                      setCurrentPage((prevPage) =>
-                        Math.min(prevPage + 1, totalPages)
-                      )
-                    }
+                    onClick={() => setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages))}
                     disabled={currentPage === totalPages}
-                    className="px-3 py-1 bg-gray-200 rounded-md hover:bg-gray-400"
+                    className="px-3 py-1 text-sm bg-gray-200 rounded-md hover:bg-gray-400"
                   >
                     Next
                   </button>
@@ -387,7 +470,7 @@ const Pelanggan = ({ isLoggedIn }) => {
               <div className="px-4 py-5 sm:px-6">
                 <div className="px-4 py-5 sm:px-6">
                   <h3 className="text-lg font-medium leading-6 text-gray-900">
-                    Delete Pelanggan
+                    Delete Siswa
                   </h3>
                   <p className="max-w-2xl mt-1 text-sm text-gray-500">
                     Apakah Anda yakin ingin menghapus data ini?
@@ -424,11 +507,11 @@ const Pelanggan = ({ isLoggedIn }) => {
             >
               <div className="relative px-5 py-8 bg-white border border-gray-400 rounded shadow-md md:px-10">
                 <h1 className="mb-4 font-bold leading-tight tracking-normal text-gray-800 font-lg">
-                  Add Pelanggan
+                  Add Siswa
                 </h1>
                 <form onSubmit={handleSubmit}>
                   <label
-                    for="name"
+                    htmlFor="nama"
                     className="text-sm font-bold leading-tight tracking-normal text-gray-800"
                   >
                     Nama
@@ -446,53 +529,62 @@ const Pelanggan = ({ isLoggedIn }) => {
 
                   <div>
                     <label
-                      for="name"
+                      htmlFor="id_kelas"
                       className="text-sm font-bold leading-tight tracking-normal text-gray-800"
                     >
-                      Alamat
+                      Kelas
                     </label>
-                    <input
-                      type="text"
-                      id="alamat"
-                      name="alamat"
-                      value={formData.alamat}
+                    <select
+                      id="id_kelas"
+                      name="id_kelas"
+                      value={formData.id_kelas}
                       onChange={handleChange}
                       className="flex items-center w-full h-10 pl-3 mt-2 mb-3 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
-                      placeholder="Alamat"
                       required
-                    />
+                    >
+                      <option value="">Pilih Kelas</option>
+                      {kelasList.map((kelas) => (
+                        <option key={kelas.id} value={kelas.id}>
+                          {kelas.nama_kelas}
+                        </option>
+                      ))}
+                    </select>
                   </div>
-                  <label
-                    for="email2"
-                    className="text-sm font-bold leading-tight tracking-normal text-gray-800"
-                  >
-                    Telp
-                  </label>
-                  <div className="relative mt-2 mb-3">
-                    <div className="absolute flex items-center h-full px-4 text-gray-600 border-r">
-                      <i className="fas fa-phone"></i>
-                    </div>
-                    <input
-                      type="number"
-                      id="telp"
-                      name="telp"
-                      value={formData.telp}
-                      onChange={handleChange}
-                      className="flex items-center w-full h-10 pl-16 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
-                      placeholder="Telp"
-                      required
-                    />
-                  </div>
+
                   <div>
                     <label
-                      for="name"
+                      htmlFor="id_jurusan"
+                      className="text-sm font-bold leading-tight tracking-normal text-gray-800"
+                    >
+                      Jurusan
+                    </label>
+                    <select
+                      id="id_jurusan"
+                      name="id_jurusan"
+                      value={formData.id_jurusan}
+                      onChange={handleChange}
+                      className="flex items-center w-full h-10 pl-3 mt-2 mb-3 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
+                      required
+                    >
+                      <option value="">Pilih Jurusan</option>
+                      {jurusanList.map((jurusan) => (
+                        <option key={jurusan.id} value={jurusan.id}>
+                          {jurusan.nama_jurusan}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="email"
                       className="text-sm font-bold leading-tight tracking-normal text-gray-800"
                     >
                       Email
                     </label>
                     <input
                       type="email"
-                      id="name"
+                      id="email"
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
@@ -501,16 +593,17 @@ const Pelanggan = ({ isLoggedIn }) => {
                       required
                     />
                   </div>
+
                   <div>
                     <label
-                      for="name"
+                      htmlFor="password"
                       className="text-sm font-bold leading-tight tracking-normal text-gray-800"
                     >
                       Password
                     </label>
                     <input
                       type="password"
-                      id="name"
+                      id="password"
                       name="password"
                       value={formData.password}
                       onChange={handleChange}
@@ -575,7 +668,7 @@ const Pelanggan = ({ isLoggedIn }) => {
             >
               <div className="relative px-5 py-8 bg-white border border-gray-400 rounded shadow-md md:px-10">
                 <h1 className="mb-4 font-bold leading-tight tracking-normal text-gray-800 font-lg">
-                  Update Pelanggan
+                  Update Siswa
                 </h1>
                 <form onSubmit={handleUpdate}>
                   <label
@@ -588,9 +681,9 @@ const Pelanggan = ({ isLoggedIn }) => {
                     type="text"
                     id="nama"
                     name="nama"
-                    value={updateData.nama}
+                    value={updateData.nama_lengkap}
                     onChange={(e) =>
-                      setUpdateData({ ...updateData, nama: e.target.value })
+                      setUpdateData({ ...updateData, nama_lengkap: e.target.value })
                     }
                     className="flex items-center w-full h-10 pl-3 mt-2 mb-3 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
                     placeholder="Nama"
@@ -601,45 +694,51 @@ const Pelanggan = ({ isLoggedIn }) => {
                       for="name"
                       className="text-sm font-bold leading-tight tracking-normal text-gray-800"
                     >
-                      Alamat
+                      Kelas
                     </label>
-                    <input
-                      type="text"
-                      id="alamat"
-                      name="alamat"
-                      value={updateData.alamat}
+                    <select
+                      id="id_kelas"
+                      name="id_kelas"
+                      value={updateData.id_kelas}
                       onChange={(e) =>
-                        setUpdateData({
-                          ...updateData,
-                          alamat: e.target.value,
-                        })
+                        setUpdateData({ ...updateData, id_kelas: e.target.value })
                       }
                       className="flex items-center w-full h-10 pl-3 mt-2 mb-3 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
-                      placeholder="Alamat"
-                    />
+                    >
+                      <option value="">Pilih Kelas</option>
+                      {kelasList.map((kelas) => (
+                        <option key={kelas.id} value={kelas.id}>
+                          {kelas.nama_kelas}
+                        </option>
+                      ))}
+                    </select>
                   </div>
-                  <label
-                    for="email2"
-                    className="text-sm font-bold leading-tight tracking-normal text-gray-800"
-                  >
-                    Telp
-                  </label>
-                  <div className="relative mt-2 mb-3">
-                    <div className="absolute flex items-center h-full px-4 text-gray-600 border-r">
-                      <i className="fas fa-phone"></i>
-                    </div>
-                    <input
-                      type="number"
-                      id="telp"
-                      name="telp"
-                      value={updateData.telp}
+
+                  <div>
+                    <label
+                      for="name"
+                      className="text-sm font-bold leading-tight tracking-normal text-gray-800"
+                    >
+                      Jurusan
+                    </label>
+                    <select
+                      id="id_jurusan"
+                      name="id_jurusan"
+                      value={updateData.id_jurusan}
                       onChange={(e) =>
-                        setUpdateData({ ...updateData, telp: e.target.value })
+                        setUpdateData({ ...updateData, id_jurusan: e.target.value })
                       }
-                      className="flex items-center w-full h-10 pl-16 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
-                      placeholder="XXXX - XXXX"
-                    />
+                      className="flex items-center w-full h-10 pl-3 mt-2 mb-3 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
+                    >
+                      <option value="">Pilih Jurusan</option>
+                      {jurusanList.map((jurusan) => (
+                        <option key={jurusan.id} value={jurusan.id}>
+                          {jurusan.nama_jurusan}
+                        </option>
+                      ))}
+                    </select>
                   </div>
+
                   <div>
                     <label
                       for="name"
@@ -659,6 +758,7 @@ const Pelanggan = ({ isLoggedIn }) => {
                       placeholder="Email"
                     />
                   </div>
+
                   <div>
                     <label
                       for="name"
@@ -682,7 +782,7 @@ const Pelanggan = ({ isLoggedIn }) => {
                     />
                   </div>
 
-                  <div className="flex items-center justify-start w-full mt-4">
+                  <div className="flex items-center justify-start w-full">
                     <button
                       type="submit"
                       className="px-8 py-2 text-sm text-white transition duration-150 ease-in-out bg-indigo-700 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-700 hover:bg-indigo-600"
@@ -745,4 +845,4 @@ export async function getServerSideProps(context) {
   };
 }
 
-export default Pelanggan;
+export default Siswa;

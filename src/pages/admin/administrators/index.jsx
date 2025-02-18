@@ -253,7 +253,7 @@ const Administrators = ({ isLoggedIn }) => {
           />
           <button
             onClick={toggleModal}
-            className="flex items-center gap-1 px-4 py-2 text-white rounded-md shadow-sm bg-orange-400 hover:bg-orange-600"
+            className="flex items-center gap-1 px-4 py-2 text-white rounded-md shadow-sm bg-amber-400 hover:bg-amber-500"
           >
             <i className="fa-solid fa-plus"></i>
             Administrators
@@ -311,7 +311,7 @@ const Administrators = ({ isLoggedIn }) => {
                             {/* Button Edit */}
                             <button onClick={() => handleEdit(item)}>
                               <div
-                                className="items-center w-auto px-5 py-2 mb-2 tracking-wider text-white rounded-full shadow-sm bg-orange-400 hover:bg-orange-600"
+                                className="items-center w-auto px-5 py-2 mb-2 tracking-wider text-white rounded-full shadow-sm bg-amber-400 hover:bg-amber-500"
                                 aria-label="edit"
                               >
                                 <i className="fa-solid fa-pen"></i>
@@ -324,7 +324,7 @@ const Administrators = ({ isLoggedIn }) => {
                                 toggleModalDelete();
                                 setItemIdToDelete(item.id);
                               }}
-                              className="items-center w-auto px-5 py-2 mb-2 tracking-wider text-white rounded-full shadow-sm bg-orange-400 hover:bg-orange-600"
+                              className="items-center w-auto px-5 py-2 mb-2 tracking-wider text-white rounded-full shadow-sm bg-amber-400 hover:bg-amber-500"
                               aria-label="delete"
                             >
                               {isDeleting ? (
@@ -368,7 +368,7 @@ const Administrators = ({ isLoggedIn }) => {
                           }
                           className={`mx-1 px-3 py-1 rounded-md ${
                             currentPage === firstPage + index
-                              ? "bg-orange-400 hover:bg-orange-600 text-white"
+                              ? "bg-amber-400 hover:bg-amber-500 text-white"
                               : "bg-gray-200 hover:bg-gray-400"
                           }`}
                         >

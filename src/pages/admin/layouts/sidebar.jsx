@@ -37,22 +37,19 @@ export default function Sidebar() {
       router.push("/auth/login");
     } catch (error) {}
   };
-
-  const [dropdownOpenPaket, setDropdownOpenPaket] = useState(
-    router.pathname.indexOf("/admin/paket") !== -1 ||
-      router.pathname.indexOf("/admin/benefit_paket") !== -1 ||
-      router.pathname.indexOf("/admin/contoh_desain") !== -1
-  );
-  const [dropdownOpenKlien, setDropdownOpenKlien] = useState(
-    router.pathname.indexOf("/admin/kategoriKlien") !== -1 ||
-      router.pathname.indexOf("/admin/klien") !== -1
-  );
   const [dropdownOpenPembayaran, setDropdownOpenPembayaran] = useState(
-    router.pathname.indexOf("/admin/pembayaran") !== -1 ||
-      router.pathname.indexOf("/admin/testimoni") !== -1 ||
-      router.pathname.indexOf("/admin/kategoriWebsite") !== -1 ||
-      router.pathname.indexOf("/admin/syarat_ketentuan") !== -1
+      router.pathname.indexOf("/admin/siswa") !== -1 ||
+      router.pathname.indexOf("/admin/guru_pembimbing") !== -1 ||
+      router.pathname.indexOf("/admin/administrators") !== -1
   );
+
+  useEffect(() => {
+    setDropdownOpenPembayaran(
+      router.pathname.indexOf("/admin/guru_pembimbing") !== -1 ||
+      router.pathname.indexOf("/admin/user") !== -1 ||
+      router.pathname.indexOf("/admin/administrators") !== -1
+    );
+  }, [router.pathname]);
 
   return (
     <>
@@ -72,7 +69,7 @@ export default function Sidebar() {
             href={"/"}
             className="inline-block mr-0 text-sm font-bold text-left uppercase md:block md:pb-2 text-blueGray-600 whitespace-nowrap"
           >
-            GMT SOFT DEVELOPMENT
+            SISFO JURNAL PKL
           </Link>
           <div
             className={
@@ -87,7 +84,7 @@ export default function Sidebar() {
                     href="/"
                     className="inline-block text-sm font-bold uppercase md:block md:pb-2 text-blueGray-600 whitespace-nowrap"
                   >
-                    GMT SOFTWARE DEVELOPMENT
+                    SISFO JURNAL PKL
                   </Link>
                 </div>
                 <div className="flex justify-end w-6/12">
@@ -103,145 +100,6 @@ export default function Sidebar() {
             </div>
 
             <div className="flex flex-col list-none md:flex-col md:min-w-full">
-              <div className="flex justify-start">
-                <div className="relative">
-                  <button
-                    className="flex items-center w-full py-3 text-xs font-bold uppercase"
-                    onClick={() => {
-                      setDropdownOpenPaket(!dropdownOpenPaket);
-                      setDropdownOpenKlien(false);
-                    }}
-                  >
-                    <i className="fa-solid fa-box text-sm mr-3"></i>
-                    <span>Paket</span>
-                    <i
-                      className={`fas fa-chevron-${
-                        dropdownOpenPaket ? "up" : "down"
-                      } mx-2`}
-                    ></i>
-                  </button>
-                  <CSSTransition
-                    in={dropdownOpenPaket}
-                    timeout={300}
-                    classNames={{
-                      enter: styles.dropdownEnter,
-                      enterActive: styles.dropdownEnterActive,
-                      exit: styles.dropdownExit,
-                      exitActive: styles.dropdownExitActive,
-                    }}
-                    unmountOnExit
-                  >
-                    <ul
-                      className="left-0 w-full bg-white shadow-lg px-3"
-                      style={{ width: "200px" }}
-                    >
-                      <li className="py-2">
-                        <Link
-                          href={"/admin/paket"}
-                          className={`text-blueGray-700 hover:text-blueGray-500 font-semibold text-sm ${
-                            router.pathname.indexOf("/admin/paket") !== -1
-                              ? "bg-orange-300 text-black rounded-lg px-4 py-2"
-                              : ""
-                          }`}
-                        >
-                          Paket
-                        </Link>
-                      </li>
-                      <li className="py-2">
-                        <Link
-                          href={"/admin/benefit_paket"}
-                          className={`text-blueGray-700 hover:text-blueGray-500 font-semibold text-sm ${
-                            router.pathname.indexOf("/admin/benefit_paket") !==
-                            -1
-                              ? "bg-orange-300 text-black rounded-lg px-4 py-2"
-                              : ""
-                          }`}
-                        >
-                          Benefit Paket
-                        </Link>
-                      </li>
-                      <li className="pt-2 pb-6">
-                        <Link
-                          href={"/admin/contoh_desain"}
-                          className={`text-blueGray-700 hover:text-blueGray-500 font-semibold text-sm ${
-                            router.pathname.indexOf("/admin/contoh_desain") !==
-                            -1
-                              ? "bg-orange-300 text-black rounded-lg px-4 py-2"
-                              : ""
-                          }`}
-                        >
-                          Contoh Desain
-                        </Link>
-                      </li>
-                    </ul>
-                  </CSSTransition>
-                </div>
-              </div>
-
-              <li className="items-center">
-                <div className="relative">
-                  <button
-                    className="flex items-center w-full py-3 text-xs font-bold uppercase"
-                    onClick={() => {
-                      setDropdownOpenKlien(!dropdownOpenKlien);
-                      setDropdownOpenPaket(false);
-                    }}
-                  >
-                    <i className="fa-solid fa-user mr-3 text-sm"></i>
-                    <span>Klien</span>
-                    <i
-                      className={`fas fa-chevron-${
-                        dropdownOpenKlien ? "up" : "down"
-                      } mx-2`}
-                    ></i>
-                  </button>
-                  <CSSTransition
-                    in={dropdownOpenKlien}
-                    timeout={300}
-                    classNames={{
-                      enter: styles.dropdownEnter,
-                      enterActive: styles.dropdownEnterActive,
-                      exit: styles.dropdownExit,
-                      exitActive: styles.dropdownExitActive,
-                    }}
-                    unmountOnExit
-                  >
-                    <ul
-                      className="left-0 w-full bg-white shadow-lg px-3"
-                      style={{ width: "200px" }}
-                    >
-                      <li className="py-2">
-                        <Link
-                          href={"/admin/kategoriKlien"}
-                          className={`text-blueGray-700 hover:text-blueGray-500 font-semibold text-sm ${
-                            router.pathname.indexOf("/admin/kategoriKlien") !==
-                            -1
-                              ? "bg-orange-300 text-black rounded-lg px-4 py-2"
-                              : ""
-                          }`}
-                        >
-                          Kategori Klien
-                        </Link>
-                      </li>
-                      <li className="pt-2 pb-4">
-                        <Link
-                          href={"/admin/klien"}
-                          className={`text-blueGray-700 hover:text-blueGray-500 font-semibold text-sm ${
-                            router.pathname.indexOf("/admin/klien") !== -1
-                              ? "bg-orange-300 text-black rounded-lg px-4 py-2"
-                              : ""
-                          }`}
-                        >
-                          Klien
-                        </Link>
-                      </li>
-                    </ul>
-                  </CSSTransition>
-                </div>
-              </li>
-
-              {dropdownOpenKlien && <li className="h-4"></li>}
-
               {/* Dropdown for Pembayaran, Testimoni, Kategori Website, and Syarat Ketentuan */}
               <li className="items-center">
                 <div className="relative">
@@ -249,12 +107,10 @@ export default function Sidebar() {
                     className="flex items-center w-full py-3 text-xs font-bold uppercase"
                     onClick={() => {
                       setDropdownOpenPembayaran(!dropdownOpenPembayaran);
-                      setDropdownOpenKlien(false);
-                      setDropdownOpenPaket(false);
                     }}
                   >
-                    <i className="fa-solid fa-money-bill mr-3 text-sm"></i>
-                    <span>Manajemen</span>
+                    <i className="fa-solid fa-user-tie mr-3 text-sm"></i>
+                    <span>User</span>
                     <i
                       className={`fas fa-chevron-${
                         dropdownOpenPembayaran ? "up" : "down"
@@ -278,54 +134,38 @@ export default function Sidebar() {
                     >
                       <li className="py-2">
                         <Link
-                          href={"/admin/pembayaran"}
+                          href={"/admin/siswa"}
                           className={`text-blueGray-700 hover:text-blueGray-500 font-semibold text-sm ${
-                            router.pathname.indexOf("/admin/pembayaran") !== -1
-                              ? "bg-orange-300 text-black rounded-lg px-4 py-2"
+                            router.pathname.indexOf("/admin/siswa") !== -1
+                              ? "bg-amber-300 text-black rounded-lg px-4 py-2"
                               : ""
                           }`}
                         >
-                          Pembayaran
+                          Siswa
                         </Link>
                       </li>
                       <li className="py-2">
                         <Link
-                          href={"/admin/testimoni"}
+                          href={"/admin/guru_pembimbing"}
                           className={`text-blueGray-700 hover:text-blueGray-500 font-semibold text-sm ${
-                            router.pathname.indexOf("/admin/testimoni") !== -1
-                              ? "bg-orange-300 text-black rounded-lg px-4 py-2"
+                            router.pathname.indexOf("/admin/guru_pembimbing") !== -1
+                              ? "bg-amber-300 text-black rounded-lg px-4 py-2"
                               : ""
                           }`}
                         >
-                          Testimoni
+                          Guru Pembimbing
                         </Link>
                       </li>
-                      <li className="py-2">
+                      <li className="py-2 pb-4">
                         <Link
-                          href={"/admin/kategoriWebsite"}
+                          href={"/admin/administrators"}
                           className={`text-blueGray-700 hover:text-blueGray-500 font-semibold text-sm ${
-                            router.pathname.indexOf(
-                              "/admin/kategoriWebsite"
-                            ) !== -1
-                              ? "bg-orange-300 text-black rounded-lg px-4 py-2"
+                            router.pathname.indexOf("/admin/administrators") !== -1
+                              ? "bg-amber-300 text-black rounded-lg px-4 py-2"
                               : ""
                           }`}
                         >
-                          Kategori Website
-                        </Link>
-                      </li>
-                      <li className="pt-2 pb-4">
-                        <Link
-                          href={"/admin/syarat_ketentuan"}
-                          className={`text-blueGray-700 hover:text-blueGray-500 font-semibold text-sm ${
-                            router.pathname.indexOf(
-                              "/admin/syarat_ketentuan"
-                            ) !== -1
-                              ? "bg-orange-300 text-black rounded-lg px-4 py-2"
-                              : ""
-                          }`}
-                        >
-                          Syarat & Ketentuan
+                          Administrator
                         </Link>
                       </li>
                     </ul>
@@ -335,99 +175,11 @@ export default function Sidebar() {
 
               <li className="items-center">
                 <Link
-                  href={"/admin/invoice"}
-                  className={
-                    "text-xs uppercase py-3 font-bold block " +
-                    (router.pathname.indexOf("/admin/invoice") !== -1
-                      ? "bg-orange-300 text-black rounded-lg px-4 py-2"
-                      : "text-blueGray-700 hover:text-blueGray-500")
-                  }
-                >
-                  <i
-                    className={
-                      "fa-solid fa-file-invoice mr-2 text-sm " +
-                      (router.pathname.indexOf("/admin/invoice") !== -1
-                        ? "opacity-75"
-                        : "text-blueGray-300")
-                    }
-                  ></i>{" "}
-                  Invoice
-                </Link>
-              </li>
-
-              <li className="items-center">
-                <Link
-                  href={"/admin/pelanggan"}
-                  className={
-                    "text-xs uppercase py-3 font-bold block " +
-                    (router.pathname.indexOf("/admin/pelanggan") !== -1
-                      ? "bg-orange-300 text-black rounded-lg px-4 py-2"
-                      : "text-blueGray-700 hover:text-blueGray-500")
-                  }
-                >
-                  <i
-                    className={
-                      "fa-regular fa-handshake mr-2 text-sm " +
-                      (router.pathname.indexOf("/admin/pelanggan") !== -1
-                        ? "opacity-75"
-                        : "text-blueGray-300")
-                    }
-                  ></i>{" "}
-                  Pelanggan
-                </Link>
-              </li>
-
-              <li className="items-center">
-                <Link
-                  href={"/admin/wcu"}
-                  className={
-                    "text-xs uppercase py-3 font-bold block " +
-                    (router.pathname.indexOf("/admin/wcu") !== -1
-                      ? "bg-orange-300 text-black rounded-lg px-4 py-2"
-                      : "text-blueGray-700 hover:text-blueGray-500")
-                  }
-                >
-                  <i
-                    className={
-                      "fa-solid fa-question mr-2 text-sm " +
-                      (router.pathname.indexOf("/admin/wcu") !== -1
-                        ? "opacity-75"
-                        : "text-blueGray-300")
-                    }
-                  ></i>{" "}
-                  WCU
-                </Link>
-              </li>
-
-              <li className="items-center">
-                <Link
-                  href={"/admin/keterangan"}
-                  className={
-                    "text-xs uppercase py-3 font-bold block " +
-                    (router.pathname.indexOf("/admin/keterangan") !== -1
-                      ? "bg-orange-300 text-black rounded-lg px-4 py-2"
-                      : "text-blueGray-700 hover:text-blueGray-500")
-                  }
-                >
-                  <i
-                    className={
-                      "fa-solid fa-info mr-2 text-sm " +
-                      (router.pathname.indexOf("/admin/keterangan") !== -1
-                        ? "opacity-75"
-                        : "text-blueGray-300")
-                    }
-                  ></i>{" "}
-                  Keterangan
-                </Link>
-              </li>
-
-              <li className="items-center">
-                <Link
                   href={"/admin/backup_data"}
                   className={
                     "text-xs uppercase py-3 font-bold block " +
                     (router.pathname.indexOf("/admin/backup_data") !== -1
-                      ? "bg-orange-300 text-black rounded-lg px-4 py-2"
+                      ? "bg-amber-300 text-black rounded-lg px-4 py-2"
                       : "text-blueGray-700 hover:text-blueGray-500")
                   }
                 >
@@ -445,33 +197,11 @@ export default function Sidebar() {
 
               <li className="items-center">
                 <Link
-                  href={"/admin/administrators"}
-                  className={
-                    "text-xs uppercase py-3 font-bold block " +
-                    (router.pathname.indexOf("/admin/administrators") !== -1
-                      ? "bg-orange-300 text-black rounded-lg px-4 py-2"
-                      : "text-blueGray-700 hover:text-blueGray-500")
-                  }
-                >
-                  <i
-                    className={
-                      "fa-solid fa-user-tie mr-2 text-sm " +
-                      (router.pathname.indexOf("/admin/administrators") !== -1
-                        ? "opacity-75"
-                        : "text-blueGray-300")
-                    }
-                  ></i>{" "}
-                  Administrators
-                </Link>
-              </li>
-
-              <li className="items-center">
-                <Link
                   href={"/admin/setting"}
                   className={
                     "text-xs uppercase py-3 font-bold block " +
                     (router.pathname.indexOf("/admin/setting") !== -1
-                      ? "bg-orange-300 text-black rounded-lg px-4 py-2"
+                      ? "bg-amber-300 text-black rounded-lg px-4 py-2"
                       : "text-blueGray-700 hover:text-blueGray-500")
                   }
                 >

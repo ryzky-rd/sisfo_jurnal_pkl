@@ -17,20 +17,33 @@ export default function Edit() {
     wa: "",
     telp: "",
     email: "",
-    profil_perusahaan: "",
-    bidang_perusahaan: "",
-    url_gmaps: "",
+    nama_sekolah: "",
     alamat: "",
-    gambar: null,
-    gambar_cap: null,
-    gambar_ttd: null,
+    url_gmaps: "",
+    foto: null,
+    gambar_setting: null,
   });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(`${BASE_URL}/api/setting/${id}`);
-        // console.log("respons", response.data);
+        
+        if (!response.data) {
+          // Jika tidak ada data, set nilai default
+          setFormData({
+            setting_warna: "",
+            wa: "",
+            telp: "",
+            email: "",
+            nama_sekolah: "",
+            alamat: "",
+            url_gmaps: "",
+            foto: null,
+            gambar_setting: null,
+          });
+          return;
+        }
 
         const data = response.data;
         const {
@@ -38,13 +51,11 @@ export default function Edit() {
           wa,
           telp,
           email,
-          profil_perusahaan,
-          bidang_perusahaan,
+          nama_sekolah,
           alamat,
           url_gmaps,
           foto,
-          foto_cap,
-          foto_ttd,
+          gambar_setting,
         } = data;
 
         setFormData({
@@ -52,17 +63,31 @@ export default function Edit() {
           wa: wa || "",
           telp: telp || "",
           email: email || "",
-          profil_perusahaan: profil_perusahaan || "",
-          bidang_perusahaan: bidang_perusahaan || "",
+          nama_sekolah: nama_sekolah || "",
           alamat: alamat || "",
           url_gmaps: url_gmaps || "",
-          gambar: foto || null,
-          gambar_cap: foto_cap || null,
-          gambar_ttd: foto_ttd || null,
+          foto: foto || null,
+          gambar_setting: gambar_setting || null,
         });
       } catch (error) {
-        console.error("Error fetching data setting:", error);
-        setError(error);
+        // Tambahkan penanganan khusus untuk error 404
+        if (error.response && error.response.status === 404) {
+          setError({ message: "Data setting belum tersedia. Silakan isi data baru." });
+          // Set form kosong
+          setFormData({
+            setting_warna: "",
+            wa: "",
+            telp: "",
+            email: "",
+            nama_sekolah: "",
+            alamat: "",
+            url_gmaps: "",
+            foto: null,
+            gambar_setting: null,
+          });
+        } else {
+          setError({ message: "Terjadi kesalahan saat mengambil data" });
+        }
       } finally {
         setLoading(false);
       }
@@ -97,20 +122,16 @@ export default function Edit() {
       formDataToSend.append("wa", formData.wa);
       formDataToSend.append("telp", formData.telp);
       formDataToSend.append("email", formData.email);
-      formDataToSend.append("profil_perusahaan", formData.profil_perusahaan);
-      formDataToSend.append("bidang_perusahaan", formData.bidang_perusahaan);
+      formDataToSend.append("nama_sekolah", formData.nama_sekolah);
       formDataToSend.append("alamat", formData.alamat);
       formDataToSend.append("url_gmaps", formData.url_gmaps);
 
       // Hanya tambahkan gambar baru jika ada
-      if (formData.gambar) {
-        formDataToSend.append("foto", formData.gambar);
+      if (formData.foto) {
+        formDataToSend.append("foto", formData.foto);
       }
-      if (formData.gambar_cap) {
-        formDataToSend.append("foto_cap", formData.gambar_cap);
-      }
-      if (formData.gambar_ttd) {
-        formDataToSend.append("foto_ttd", formData.gambar_ttd);
+      if (formData.gambar_setting) {
+        formDataToSend.append("gambar_setting", formData.gambar_setting);
       }
 
       const response = await axios.patch(
@@ -163,36 +184,8 @@ export default function Edit() {
               </label>
               <input
                 type="file"
-                name="gambar"
-                id="gambar"
-                onChange={handleInputChange}
-                className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                accept="image/*"
-              />
-            </div>
-
-            <div className="mb-6">
-              <label className="mb-5 block text-base font-semibold text-[#07074D]">
-                Foto Cap
-              </label>
-              <input
-                type="file"
-                name="gambar_cap"
-                id="gambar_cap"
-                onChange={handleInputChange}
-                className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                accept="image/*"
-              />
-            </div>
-
-            <div className="mb-6">
-              <label className="mb-5 block text-base font-semibold text-[#07074D]">
-                Foto TTD
-              </label>
-              <input
-                type="file"
-                name="gambar_ttd"
-                id="gambar_ttd"
+                name="foto"
+                id="foto"
                 onChange={handleInputChange}
                 className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
                 accept="image/*"
@@ -203,8 +196,7 @@ export default function Edit() {
               "wa",
               "telp",
               "email",
-              "profil_perusahaan",
-              "bidang_perusahaan",
+              "nama_sekolah",
               "alamat",
               "url_gmaps",
             ].map((field) => (

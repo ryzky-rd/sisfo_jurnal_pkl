@@ -8,50 +8,19 @@ import AOS from "aos"; // Tambahkan import AOS
 import "aos/dist/aos.css"; // Tambahkan import CSS AOS
 
 export default function Paket() {
-  const [jurusan] = useState([
-    {
-      id: 1,
-      nama_jurusan: "RPL",
-      guru: [
-        "Dudung Zulkipli S.Kom, MM.",
-        "Ahmad Subarjo S.Pd.",
-        "Siti Aminah S.T."
-      ]
-    },
-    {
-      id: 2,
-      nama_jurusan: "TJKT",
-      guru: [
-        "Budi Santoso S.Kom.",
-        "Dedi Kurniawan M.Pd.",
-        "Rina Wati S.T."
-      ]
-    },
-    {
-      id: 3,
-      nama_jurusan: "DPIB",
-      guru: [
-        "Joko Widodo S.T.",
-        "Sri Mulyani M.Pd.",
-        "Bambang Susilo S.Pd."
-      ]
-    }
-  ]);
-  
-  // Komentar fetch data asli
-  /*
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [settingPembimbingJurusan, setSettingPembimbimbingJurusan] =
+    useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [paketResponse, benefitResponse] = await Promise.all([
-          axios.get(`${BASE_URL}/api/paket`),
-          axios.get(`${BASE_URL}/api/benefitPaket`),
-        ]);
-        setPaket(paketResponse.data.data);
-        setBenefitPaket(benefitResponse.data.data);
+        const response = await axios.get(
+          `${BASE_URL}/api/setting-pembimbing-jurusan`
+        );
+        // console.log("respon : ", response.data.data);
+        setSettingPembimbimbingJurusan(response.data.data);
       } catch (error) {
         console.error("Error fetching data:", error);
         setError(error);
@@ -62,14 +31,7 @@ export default function Paket() {
 
     fetchData();
   }, []);
-  */
 
-  useEffect(() => {
-    AOS.init();
-  }, []);
-
-  // Hapus atau komentari kondisi error dan loading
-  /*
   if (error) {
     return (
       <div className="text-center text-red-500">Error: {error.message}</div>
@@ -89,7 +51,6 @@ export default function Paket() {
       </>
     );
   }
-  */
 
   return (
     <section className="relative -mt-5 bg-transparent">
@@ -99,8 +60,11 @@ export default function Paket() {
         </h1>
       </div>
 
-      <div className="relative flex flex-col items-center px-6 justify-center mx-auto mt-4" 
-           data-aos="fade-up" data-aos-duration="800">
+      <div
+        className="relative flex flex-col items-center px-6 justify-center mx-auto mt-4"
+        data-aos="fade-up"
+        data-aos-duration="800"
+      >
         <span className="flex text-center text-gray-500">
           Daftar guru pembimbing untuk setiap jurusan yang siap membimbing Anda.
         </span>
@@ -108,7 +72,7 @@ export default function Paket() {
 
       <div className="relative flex flex-col items-center px-6 py-2 justify-center lg:px-24">
         <div className="grid grid-cols-1 gap-8 mt-8 md:grid-cols-3 xl:grid-cols-3 w-full">
-          {jurusan.map((item) => (
+          {settingPembimbingJurusan.map((item) => (
             <div
               className="shadow-lg rounded-lg overflow-hidden bg-white"
               key={item.id}
@@ -116,16 +80,14 @@ export default function Paket() {
               data-aos-duration="800"
             >
               <h2 className="flex justify-center font-bold h-16 py-4 bg-green-400 text-xl text-white">
-                {item.nama_jurusan}
+                {item.jurusan.nama_jurusan}
               </h2>
               <div className="p-6">
                 <h3 className="font-semibold mb-3">Guru Pembimbing:</h3>
                 <ul className="space-y-2">
-                  {item.guru.map((namaGuru, index) => (
-                    <li key={index} className="text-gray-600 border-b pb-2">
-                      {namaGuru}
-                    </li>
-                  ))}
+                  <li className="text-gray-600 border-b pb-2">
+                    {item.pembimbing.nama_pembimbing}
+                  </li>
                 </ul>
               </div>
             </div>

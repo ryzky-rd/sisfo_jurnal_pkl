@@ -46,10 +46,12 @@ export default function Sidebar() {
   useEffect(() => {
     setDropdownOpenPembayaran(
       router.pathname.indexOf("/admin/guru_pembimbing") !== -1 ||
-      router.pathname.indexOf("/admin/user") !== -1 ||
+      router.pathname.indexOf("/admin/siswa") !== -1 ||
       router.pathname.indexOf("/admin/administrators") !== -1
     );
   }, [router.pathname]);
+
+  const [dropdownOpenManajemen, setDropdownOpenManajemen] = useState(false);
 
   return (
     <>
@@ -166,6 +168,67 @@ export default function Sidebar() {
                           }`}
                         >
                           Administrator
+                        </Link>
+                      </li>
+                    </ul>
+                  </CSSTransition>
+                </div>
+              </li>
+
+              {/* Dropdown for Manajemen */}
+              <li className="items-center">
+                <div className="relative">
+                  <button
+                    className="flex items-center w-full py-3 text-xs font-bold uppercase"
+                    onClick={() => {
+                      setDropdownOpenManajemen(!dropdownOpenManajemen);
+                    }}
+                  >
+                    <i className="fa-solid fa-file mr-3 text-sm"></i>
+                    <span>Manajemen</span>
+                    <i
+                      className={`fas fa-chevron-${
+                        dropdownOpenManajemen ? "up" : "down"
+                      } mx-2`}
+                    ></i>
+                  </button>
+                  <CSSTransition
+                    in={dropdownOpenManajemen}
+                    timeout={300}
+                    classNames={{
+                      enter: styles.dropdownEnter,
+                      enterActive: styles.dropdownEnterActive,
+                      exit: styles.dropdownExit,
+                      exitActive: styles.dropdownExitActive,
+                    }}
+                    unmountOnExit
+                  >
+                    <ul
+                      className="left-0 w-full bg-white shadow-lg px-3"
+                      style={{ width: "200px" }}
+                    >
+                      <li className="py-2">
+                        <Link
+                          href={"/admin/jurusan"}
+                          className={`text-blueGray-700 hover:text-blueGray-500 font-semibold text-sm`}
+                        >
+                          Jurusan
+                        </Link>
+                      </li>
+                      <li className="py-2">
+                        <Link
+                          href={"/admin/kelas"}
+                          className={`text-blueGray-700 hover:text-blueGray-500 font-semibold text-sm`}
+                        >
+                          Kelas
+                        </Link>
+                      </li>
+                      <li className="py-2 pb-4">
+                        <Link
+                          href={"/admin/perusahaan"}
+                          className={`text-blueGray-700 hover:text-blueGray-500 font-semibold text-sm`}
+                        >
+                          Perusahaan
                         </Link>
                       </li>
                     </ul>

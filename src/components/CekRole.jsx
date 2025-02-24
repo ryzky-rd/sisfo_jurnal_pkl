@@ -42,16 +42,12 @@ const CekRole = () => {
         }
       } catch (error) {
         console.error("Error checking token:", error);
-        if (
-          error.response &&
-          error.response.data &&
-          error.response.data.error
-        ) {
-          router.push("/auth/login");
-        } else {
-          console.error("Unexpected error:", error);
-          // Tambahkan penanganan error lainnya jika diperlukan
+        if (error.response) {
+          console.error("Response data:", error.response.data);
+          console.error("Response status:", error.response.status);
+          console.error("Response headers:", error.response.headers);
         }
+        router.push("/auth/login");
       }
     };
 

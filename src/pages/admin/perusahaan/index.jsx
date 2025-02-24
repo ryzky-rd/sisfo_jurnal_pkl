@@ -268,7 +268,7 @@ const Perusahaan = ({ isLoggedIn }) => {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={2} className="text-center py-4">
+                        <td colSpan={5} className="text-center py-4">
                           Data tidak tersedia
                         </td>
                       </tr>

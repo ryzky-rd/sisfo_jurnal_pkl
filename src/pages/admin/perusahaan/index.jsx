@@ -10,10 +10,10 @@ import { parseCookies } from "nookies";
 import { useRouter } from "next/router";
 import { BASE_URL } from "../../../components/layoutsAdmin/apiConfig";
 
-const Kelas = ({ isLoggedIn }) => {
-  const [allKelas, setAllKelas] = useState([]);
+const Perusahaan = ({ isLoggedIn }) => {
+  const [allPerusahaan, setAllPerusahaan] = useState([]);
   const router = useRouter();
-  const [kelas, setKelas] = useState([]);
+  const [perusahaan, setPerusahaan] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -29,24 +29,33 @@ const Kelas = ({ isLoggedIn }) => {
   
   // add data
   const [formData, setFormData] = useState({
-    nama_kelas: "",
+    nama_perusahaan: "",
+    bidang_perusahaan: "",
+    alamat_perusahaan: "",
+    pembimbing_perusahaan: "",
   });
 
   // update data
   const [updateData, setUpdateData] = useState({
     id: "",
-    nama_kelas: "",
+    nama_perusahaan: "",
+    bidang_perusahaan: "",
+    alamat_perusahaan: "",
+    pembimbing_perusahaan: "",
   });
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${BASE_URL}/api/kelas`);
+      const response = await axios.get(`${BASE_URL}/api/perusahaan`);
       const data = Array.isArray(response.data) ? response.data : response.data.data;
-      setAllKelas(data);
+      setAllPerusahaan(data);
 
       const filteredData = data.filter((item) =>
-        item.nama_kelas.toLowerCase().includes(searchTerm.toLowerCase())
+        item.nama_perusahaan.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.bidang_perusahaan.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.alamat_perusahaan.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.pembimbing_perusahaan.toLowerCase().includes(searchTerm.toLowerCase())
       );
 
       const paginatedData = filteredData.slice(
@@ -54,11 +63,11 @@ const Kelas = ({ isLoggedIn }) => {
         currentPage * pageSize
       );
 
-      setKelas(paginatedData);
+      setPerusahaan(paginatedData);
       setTotalCount(filteredData.length);
       setTotalPages(Math.ceil(filteredData.length / pageSize));
     } catch (error) {
-      console.error("Error fetching data kelas:", error);
+      console.error("Error fetching data perusahaan:", error);
       setError(error.response ? error.response.data : error);
     } finally {
       setLoading(false);
@@ -79,16 +88,22 @@ const Kelas = ({ isLoggedIn }) => {
 
     try {
       const formDataToSend = {
-        nama_kelas: formData.nama_kelas,
+        nama_perusahaan: formData.nama_perusahaan,
+        bidang_perusahaan: formData.bidang_perusahaan,
+        alamat_perusahaan: formData.alamat_perusahaan,
+        pembimbing_perusahaan: formData.pembimbing_perusahaan,
       };
 
-      const response = await axios.post(`${BASE_URL}/api/kelas`, formDataToSend);
+      const response = await axios.post(`${BASE_URL}/api/perusahaan`, formDataToSend);
 
       if (response.status === 200 || response.status === 201) {
         toast.success("Data berhasil ditambahkan!");
         setShowModal(false);
         setFormData({
-          nama_kelas: "",
+          nama_perusahaan: "",
+          bidang_perusahaan: "",
+          alamat_perusahaan: "",
+          pembimbing_perusahaan: "",
         });
         fetchData();
       }
@@ -101,7 +116,10 @@ const Kelas = ({ isLoggedIn }) => {
   const handleEdit = (item) => {
     setUpdateData({
       id: item.id,
-      nama_kelas: item.nama_kelas,
+      nama_perusahaan: item.nama_perusahaan,
+      bidang_perusahaan: item.bidang_perusahaan,
+      alamat_perusahaan: item.alamat_perusahaan,
+      pembimbing_perusahaan: item.pembimbing_perusahaan,
     });
     setShowUpdateModal(true);
   };
@@ -110,11 +128,14 @@ const Kelas = ({ isLoggedIn }) => {
     e.preventDefault();
     try {
       const dataToSend = {
-        nama_kelas: updateData.nama_kelas,
+        nama_perusahaan: updateData.nama_perusahaan,
+        bidang_perusahaan: updateData.bidang_perusahaan,
+        alamat_perusahaan: updateData.alamat_perusahaan,
+        pembimbing_perusahaan: updateData.pembimbing_perusahaan,
       };
 
       const response = await axios.patch(
-        `${BASE_URL}/api/kelas/${updateData.id}`,
+        `${BASE_URL}/api/perusahaan/${updateData.id}`,
         dataToSend,
         {
           headers: {
@@ -140,7 +161,7 @@ const Kelas = ({ isLoggedIn }) => {
   const handleDelete = async () => {
     const id = itemIdToDelete;
     try {
-      const response = await fetch(`${BASE_URL}/api/kelas/${id}`, {
+      const response = await fetch(`${BASE_URL}/api/perusahaan/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -151,7 +172,7 @@ const Kelas = ({ isLoggedIn }) => {
         throw new Error("Gagal menghapus data");
       }
 
-      setKelas(kelas.filter((item) => item.id !== id));
+      setPerusahaan(perusahaan.filter((item) => item.id !== id));
       toast.success("Data berhasil dihapus!");
     } catch (error) {
       console.error("Terjadi kesalahan:", error);
@@ -171,7 +192,7 @@ const Kelas = ({ isLoggedIn }) => {
   return (
     <>
       <Head>
-        <title>Data Kelas</title>
+        <title>Data Perusahaan</title>
       </Head>
       <AdminLayout>
         <ToastContainer />
@@ -179,7 +200,7 @@ const Kelas = ({ isLoggedIn }) => {
         <div className="flex items-center justify-between mb-4 lg:-mt-48 md:-mt-48">
           <input
             type="text"
-            placeholder="Cari Kelas..."
+            placeholder="Cari Perusahaan..."
             value={searchTerm}
             onChange={handleSearchInputChange}
             className="w-48 rounded-xl border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -189,27 +210,39 @@ const Kelas = ({ isLoggedIn }) => {
             className="flex items-center gap-1 px-4 py-2 text-white rounded-md shadow-sm bg-amber-400 hover:bg-amber-500"
           >
             <i className="fa-solid fa-plus"></i>
-            Kelas
+            Perusahaan
           </button>
         </div>
 
         <div className="flex flex-col bg-white rounded-xl items-center">
-          <div className="sm:-mx-6 lg:-mx-8 w-full">
-            <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
+          <div className="sm:-mx-6 w-full">
+            <div className="inline-block min-w-full py-2 sm:px-6">
               <div className="overflow-x-auto lg:overflow-x-hidden">
                 <table className="min-w-full text-sm font-light text-left">
                   <thead className="font-medium border-b dark:border-neutral-500">
                     <tr>
-                      <th scope="col" className="px-6 py-4">Nama Kelas</th>
+                      <th scope="col" className="px-6 py-4">Nama Perusahaan</th>
+                      <th scope="col" className="px-6 py-4">Bidang Perusahaan</th>
+                      <th scope="col" className="px-6 py-4">Alamat Perusahaan</th>
+                      <th scope="col" className="px-6 py-4">Pembimbing Perusahaan</th>
                       <th scope="col" className="px-6 py-4">Action</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {kelas && kelas.length > 0 ? (
-                      kelas.map((item) => (
+                    {perusahaan && perusahaan.length > 0 ? (
+                      perusahaan.map((item) => (
                         <tr className="border-b dark:border-neutral-500" key={item.id}>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            {item.nama_kelas || "Nama tidak tersedia"}
+                            {item.nama_perusahaan || "Nama tidak tersedia"}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {item.bidang_perusahaan || "Nama tidak tersedia"}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {item.alamat_perusahaan || "Nama tidak tersedia"}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {item.pembimbing_perusahaan || "Nama tidak tersedia"}
                           </td>
                           <td className="flex items-center gap-1 px-6 py-4 whitespace-nowrap">
                             <button onClick={() => handleEdit(item)}>
@@ -255,7 +288,7 @@ const Kelas = ({ isLoggedIn }) => {
             <div className="relative w-full max-w-md transition transform bg-white rounded-lg shadow-xl">
               <div className="px-4 py-5 sm:px-6">
                 <h3 className="text-lg font-medium leading-6 text-gray-900">
-                  Delete Kelas
+                  Delete Perusahaan
                 </h3>
                 <p className="max-w-2xl mt-1 text-sm text-gray-500">
                   Apakah Anda yakin ingin menghapus data ini?
@@ -290,23 +323,74 @@ const Kelas = ({ isLoggedIn }) => {
             >
               <div className="relative px-5 py-8 bg-white border border-gray-400 rounded shadow-md md:px-10">
                 <h1 className="mb-4 font-bold leading-tight tracking-normal text-gray-800 font-lg">
-                  Add Kelas
+                  Add Perusahaan
                 </h1>
                 <form onSubmit={handleSubmit}>
                   <label
-                    htmlFor="nama_kelas"
+                    htmlFor="nama_perusahaan"
                     className="text-sm font-bold leading-tight tracking-normal text-gray-800"
                   >
-                    Nama Kelas
+                    Nama Perusahaan
                   </label>
                   <input
                     type="text"
-                    id="nama_kelas"
-                    name="nama_kelas"
-                    value={formData.nama_kelas}
-                    onChange={(e) => setFormData({ ...formData, nama_kelas: e.target.value })}
+                    id="nama_perusahaan"
+                    name="nama_perusahaan"
+                    value={formData.nama_perusahaan}
+                    onChange={(e) => setFormData({ ...formData, nama_perusahaan: e.target.value })}
                     className="flex items-center w-full h-10 pl-3 mt-2 mb-3 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
-                    placeholder="Nama Kelas"
+                    placeholder="Nama Perusahaan"
+                    required
+                  />
+
+                  <label
+                    htmlFor="bidang_perusahaan"
+                    className="text-sm font-bold leading-tight tracking-normal text-gray-800"
+                  >
+                    Bidang Perusahaan
+                  </label>
+                  <input
+                    type="text"
+                    id="bidang_perusahaan"
+                    name="bidang_perusahaan"
+                    value={formData.bidang_perusahaan}
+                    onChange={(e) => setFormData({ ...formData, bidang_perusahaan: e.target.value })}
+                    className="flex items-center w-full h-10 pl-3 mt-2 mb-3 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
+                    placeholder="Bidang Perusahaan"
+                    required
+                  />
+
+                  <label
+                    htmlFor="alamat_perusahaan"
+                    className="text-sm font-bold leading-tight tracking-normal text-gray-800"
+                  >
+                    Alamat Perusahaan
+                  </label>
+                  <input
+                    type="text"
+                    id="alamat_perusahaan"
+                    name="alamat_perusahaan"
+                    value={formData.alamat_perusahaan}
+                    onChange={(e) => setFormData({ ...formData, alamat_perusahaan: e.target.value })}
+                    className="flex items-center w-full h-10 pl-3 mt-2 mb-3 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
+                    placeholder="Alamat Perusahaan"
+                    required
+                  />
+
+                  <label
+                    htmlFor="pembimbing_perusahaan"
+                    className="text-sm font-bold leading-tight tracking-normal text-gray-800"
+                  >
+                    Pembimbing Perusahaan
+                  </label>
+                  <input
+                    type="text"
+                    id="pembimbing_perusahaan"
+                    name="pembimbing_perusahaan"
+                    value={formData.pembimbing_perusahaan}
+                    onChange={(e) => setFormData({ ...formData, pembimbing_perusahaan: e.target.value })}
+                    className="flex items-center w-full h-10 pl-3 mt-2 mb-3 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
+                    placeholder="Pembimbing Perusahaan"
                     required
                   />
 
@@ -340,23 +424,71 @@ const Kelas = ({ isLoggedIn }) => {
             >
               <div className="relative px-5 py-8 bg-white border border-gray-400 rounded shadow-md md:px-10">
                 <h1 className="mb-4 font-bold leading-tight tracking-normal text-gray-800 font-lg">
-                  Update Kelas
+                  Update Perusahaan
                 </h1>
                 <form onSubmit={handleUpdate}>
                   <label
-                    htmlFor="nama_kelas"
+                    htmlFor="nama_perusahaan"
                     className="text-sm font-bold leading-tight tracking-normal text-gray-800"
                   >
-                    Nama Kelas
+                    Nama Perusahaan
                   </label>
                   <input
                     type="text"
-                    id="nama_kelas"
-                    name="nama_kelas"
-                    value={updateData.nama_kelas}
-                    onChange={(e) => setUpdateData({ ...updateData, nama_kelas: e.target.value })}
+                    id="nama_perusahaan"
+                    name="nama_perusahaan"
+                    value={updateData.nama_perusahaan}
+                    onChange={(e) => setUpdateData({ ...updateData, nama_perusahaan: e.target.value })}
                     className="flex items-center w-full h-10 pl-3 mt-2 mb-3 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
-                    placeholder="Nama Kelas"
+                    placeholder="Nama Perusahaan"
+                  />
+
+                  <label
+                    htmlFor="bidang_perusahaan"
+                    className="text-sm font-bold leading-tight tracking-normal text-gray-800"
+                  >
+                    Bidang Perusahaan
+                  </label>
+                  <input
+                    type="text"
+                    id="bidang_perusahaan"
+                    name="bidang_perusahaan"
+                    value={updateData.bidang_perusahaan}
+                    onChange={(e) => setUpdateData({ ...updateData, bidang_perusahaan: e.target.value })}
+                    className="flex items-center w-full h-10 pl-3 mt-2 mb-3 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
+                    placeholder="Bidang Perusahaan"
+                  />
+
+                  <label
+                    htmlFor="alamat_perusahaan"
+                    className="text-sm font-bold leading-tight tracking-normal text-gray-800"
+                  >
+                    Alamat Perusahaan
+                  </label>
+                  <input
+                    type="text"
+                    id="alamat_perusahaan"
+                    name="alamat_perusahaan"
+                    value={updateData.alamat_perusahaan}
+                    onChange={(e) => setUpdateData({ ...updateData, alamat_perusahaan: e.target.value })}
+                    className="flex items-center w-full h-10 pl-3 mt-2 mb-3 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
+                    placeholder="Alamat Perusahaan"
+                  />
+
+                  <label
+                    htmlFor="pembimbing_perusahaan"
+                    className="text-sm font-bold leading-tight tracking-normal text-gray-800"
+                  >
+                    Pembimbing Perusahaan
+                  </label>
+                  <input
+                    type="text"
+                    id="pembimbing_perusahaan"
+                    name="pembimbing_perusahaan"
+                    value={updateData.pembimbing_perusahaan}
+                    onChange={(e) => setUpdateData({ ...updateData, pembimbing_perusahaan: e.target.value })}
+                    className="flex items-center w-full h-10 pl-3 mt-2 mb-3 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
+                    placeholder="Pembimbing Perusahaan"
                   />
 
                   <div className="flex items-center justify-start w-full">
@@ -393,4 +525,4 @@ export async function getServerSideProps(context) {
   };
 }
 
-export default Kelas;
+export default Perusahaan;

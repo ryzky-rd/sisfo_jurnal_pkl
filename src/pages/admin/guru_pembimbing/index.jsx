@@ -48,7 +48,7 @@ const Pembimbing = ({ isLoggedIn }) => {
     setLoading(true);
     try {
       const response = await axios.get(`${BASE_URL}/api/pembimbing`);
-      const data = Array.isArray(response.data) ? response.data : response.data.data;
+      const data = Array.isArray(response.data.data) ? response.data.data : response.data;
       setAllPembimbing(data);
 
       const filteredData = data.filter((item) =>

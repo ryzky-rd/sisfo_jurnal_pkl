@@ -51,7 +51,11 @@ export default function Sidebar() {
     );
   }, [router.pathname]);
 
-  const [dropdownOpenManajemen, setDropdownOpenManajemen] = useState(false);
+  const [dropdownOpenManajemen, setDropdownOpenManajemen] = useState(
+    router.pathname.indexOf("/admin/jurusan") !== -1 ||
+    router.pathname.indexOf("/admin/kelas") !== -1 ||
+    router.pathname.indexOf("/admin/perusahaan") !== -1
+  );
 
   return (
     <>
@@ -210,7 +214,11 @@ export default function Sidebar() {
                       <li className="py-2">
                         <Link
                           href={"/admin/jurusan"}
-                          className={`text-blueGray-700 hover:text-blueGray-500 font-semibold text-sm`}
+                          className={`text-blueGray-700 hover:text-blueGray-500 font-semibold text-sm ${
+                            router.pathname.indexOf("/admin/jurusan") !== -1
+                              ? "bg-amber-300 text-black rounded-lg px-4 py-2"
+                              : ""
+                          }`}
                         >
                           Jurusan
                         </Link>
@@ -218,7 +226,11 @@ export default function Sidebar() {
                       <li className="py-2">
                         <Link
                           href={"/admin/kelas"}
-                          className={`text-blueGray-700 hover:text-blueGray-500 font-semibold text-sm`}
+                          className={`text-blueGray-700 hover:text-blueGray-500 font-semibold text-sm ${
+                            router.pathname.indexOf("/admin/kelas") !== -1
+                              ? "bg-amber-300 text-black rounded-lg px-4 py-2"
+                              : ""
+                          }`}
                         >
                           Kelas
                         </Link>
@@ -226,7 +238,11 @@ export default function Sidebar() {
                       <li className="py-2 pb-4">
                         <Link
                           href={"/admin/perusahaan"}
-                          className={`text-blueGray-700 hover:text-blueGray-500 font-semibold text-sm`}
+                          className={`text-blueGray-700 hover:text-blueGray-500 font-semibold text-sm ${
+                            router.pathname.indexOf("/admin/perusahaan") !== -1
+                              ? "bg-amber-300 text-black rounded-lg px-4 py-2"
+                              : ""
+                          }`}
                         >
                           Perusahaan
                         </Link>

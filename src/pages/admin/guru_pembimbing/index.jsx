@@ -43,12 +43,13 @@ const Pembimbing = ({ isLoggedIn }) => {
     password: "",
   });
 
-
   const fetchData = async () => {
     setLoading(true);
     try {
       const response = await axios.get(`${BASE_URL}/api/pembimbing`);
-      const data = Array.isArray(response.data.data) ? response.data.data : response.data;
+      const data = Array.isArray(response.data.data)
+        ? response.data.data
+        : response.data;
       setAllPembimbing(data);
 
       const filteredData = data.filter((item) =>
@@ -99,7 +100,9 @@ const Pembimbing = ({ isLoggedIn }) => {
   //   delete
   const handleDelete = async () => {
     try {
-      const response = await axios.delete(`${BASE_URL}/api/pembimbing/${itemIdToDelete}`);
+      const response = await axios.delete(
+        `${BASE_URL}/api/pembimbing/${itemIdToDelete}`
+      );
       if (response.status === 200) {
         showToastMessage("Data berhasil dihapus!");
         fetchData();
@@ -134,36 +137,43 @@ const Pembimbing = ({ isLoggedIn }) => {
     formDataToSend.append("nip", formData.nip);
     formDataToSend.append("email", formData.email);
     formDataToSend.append("password", formData.password);
-    
-    // Pastikan foto_pembimbing ditambahkan jika ada
+
+    // Ubah nama field menjadi "foto"
     if (formData.foto_pembimbing) {
-        formDataToSend.append("foto_pembimbing", formData.foto_pembimbing);
+      formDataToSend.append("foto", formData.foto_pembimbing);
     }
 
     try {
-        const response = await axios.post(`${BASE_URL}/api/pembimbing`, formDataToSend, {
-            headers: {
-                'Content-Type': 'multipart/form-data', // Pastikan header ini ada
-            },
-        });
-
-        if (response.status === 200 || response.status === 201) {
-            showToastMessage("Data pembimbing berhasil ditambahkan!");
-            setShowModal(false);
-            setFormData({
-                nama_pembimbing: "",
-                nip: "",
-                email: "",
-                password: "",
-                foto_pembimbing: null,
-            });
-            fetchData();
+      const response = await axios.post(
+        `${BASE_URL}/api/pembimbing`,
+        formDataToSend,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", // Pastikan header ini ada
+          },
         }
+      );
+
+      if (response.status === 200 || response.status === 201) {
+        showToastMessage("Data pembimbing berhasil ditambahkan!");
+        setShowModal(false);
+        setFormData({
+          nama_pembimbing: "",
+          nip: "",
+          email: "",
+          password: "",
+          foto_pembimbing: null,
+        });
+        fetchData();
+      }
     } catch (error) {
-        console.error("Error:", error.response?.data || error.message);
-        showToastMessage(error.response?.data?.message || "Gagal mengirim data", "error");
+      console.error("Error:", error.response?.data || error.message);
+      showToastMessage(
+        error.response?.data?.message || "Gagal mengirim data",
+        "error"
+      );
     }
-};
+  };
 
   // update data
   const handleEdit = (item) => {
@@ -190,14 +200,24 @@ const Pembimbing = ({ isLoggedIn }) => {
       dataToSend.password = updateData.password;
     }
 
+    const formDataToSend = new FormData();
+    formDataToSend.append("nip", dataToSend.nip);
+    formDataToSend.append("nama_pembimbing", dataToSend.nama_pembimbing);
+    formDataToSend.append("email", dataToSend.email);
+    
+    // Tambahkan foto jika ada
+    if (formData.foto_pembimbing) {
+      formDataToSend.append("foto", formData.foto_pembimbing);
+    }
+
     try {
       const response = await axios.patch(
         `${BASE_URL}/api/pembimbing/${updateData.id}`,
-        dataToSend,
+        formDataToSend,
         {
           headers: {
-            'Content-Type': 'application/json',
-          }
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
 
@@ -254,17 +274,30 @@ const Pembimbing = ({ isLoggedIn }) => {
                   <table className="min-w-full text-sm font-light text-left">
                     <thead className="font-medium border-b dark:border-neutral-500">
                       <tr>
-                        <th scope="col" className="px-6 py-4 lg:w-[10%]">NIP</th>
-                        <th scope="col" className="px-6 py-4 lg:w-[30%]">Nama Guru Pembimbing</th>
-                        <th scope="col" className="px-6 py-4 lg:w-[15%]">Email</th>
-                        <th scope="col" className="px-6 py-4 lg:w-[20%]">Foto</th>
-                        <th scope="col" className="px-6 py-4 lg:w-[15%]">Action</th>
+                        <th scope="col" className="px-6 py-4 lg:w-[10%]">
+                          NIP
+                        </th>
+                        <th scope="col" className="px-6 py-4 lg:w-[30%]">
+                          Nama Guru Pembimbing
+                        </th>
+                        <th scope="col" className="px-6 py-4 lg:w-[15%]">
+                          Email
+                        </th>
+                        <th scope="col" className="px-6 py-4 lg:w-[20%]">
+                          Foto
+                        </th>
+                        <th scope="col" className="px-6 py-4 lg:w-[15%]">
+                          Action
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
                       {pembimbing && pembimbing.length > 0 ? (
                         pembimbing.map((item) => (
-                          <tr className="border-b dark:border-neutral-500" key={item.id}>
+                          <tr
+                            className="border-b dark:border-neutral-500"
+                            key={item.id}
+                          >
                             <td className="px-6 py-4 whitespace-nowrap">
                               {item.nip || "NIP tidak tersedia"}
                             </td>
@@ -275,7 +308,11 @@ const Pembimbing = ({ isLoggedIn }) => {
                               {item.email || "Email tidak tersedia"}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              {item.foto_pembimbing || "Foto tidak tersedia"}
+                              {item.url_foto_pembimbing ? (
+                                <img src={item.url_foto_pembimbing} alt="Foto Pembimbing" className="w-16 h-16 object-cover" />
+                              ) : (
+                                "Foto tidak tersedia"
+                              )}
                             </td>
                             <td className="flex items-center gap-1 px-6 py-4 whitespace-nowrap">
                               {/* Tombol update */}
@@ -317,18 +354,23 @@ const Pembimbing = ({ isLoggedIn }) => {
                 <div className="grid grid-cols-1 gap-4 md:hidden">
                   {pembimbing && pembimbing.length > 0 ? (
                     pembimbing.map((item) => (
-                      <div key={item.id} className="p-4 bg-white rounded-lg shadow">
+                      <div
+                        key={item.id}
+                        className="p-4 bg-white rounded-lg shadow"
+                      >
                         <div className="space-y-2">
                           <div className="flex justify-between">
                             <span className="font-bold">Nama:</span>
-                            <span>{item.nama_pembimbing || "Nama tidak tersedia"}</span>
+                            <span>
+                              {item.nama_pembimbing || "Nama tidak tersedia"}
+                            </span>
                           </div>
                           <div className="flex justify-between">
                             <span className="font-bold">Email:</span>
                             <span>{item.email || "Email tidak tersedia"}</span>
                           </div>
                           <div className="flex justify-center gap-2 mt-4">
-                            <button 
+                            <button
                               onClick={() => handleEdit(item)}
                               className="px-4 py-2 text-white rounded-full bg-amber-400 hover:bg-amber-500"
                             >
@@ -348,38 +390,45 @@ const Pembimbing = ({ isLoggedIn }) => {
                       </div>
                     ))
                   ) : (
-                    <div className="p-4 text-center">
-                      Data tidak tersedia
-                    </div>
+                    <div className="p-4 text-center">Data tidak tersedia</div>
                   )}
                 </div>
 
                 {/* Pagination */}
                 <div className="flex justify-center gap-2 my-4">
                   <button
-                    onClick={() => setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))}
+                    onClick={() =>
+                      setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))
+                    }
                     disabled={currentPage === 1}
                     className="px-3 py-1 text-sm bg-gray-200 rounded-md hover:bg-gray-400"
                   >
                     Prev
                   </button>
                   <div className="flex gap-1">
-                    {Array.from({ length: Math.min(totalPages, 5) }, (_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setCurrentPage(firstPage + index)}
-                        className={`mx-1 px-3 py-1 text-sm rounded-md ${
-                          currentPage === firstPage + index
-                            ? "bg-amber-400 hover:bg-amber-500 text-white"
-                            : "bg-gray-200 hover:bg-gray-400"
-                        }`}
-                      >
-                        {firstPage + index}
-                      </button>
-                    ))}
+                    {Array.from(
+                      { length: Math.min(totalPages, 5) },
+                      (_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setCurrentPage(firstPage + index)}
+                          className={`mx-1 px-3 py-1 text-sm rounded-md ${
+                            currentPage === firstPage + index
+                              ? "bg-amber-400 hover:bg-amber-500 text-white"
+                              : "bg-gray-200 hover:bg-gray-400"
+                          }`}
+                        >
+                          {firstPage + index}
+                        </button>
+                      )
+                    )}
                   </div>
                   <button
-                    onClick={() => setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages))}
+                    onClick={() =>
+                      setCurrentPage((prevPage) =>
+                        Math.min(prevPage + 1, totalPages)
+                      )
+                    }
                     disabled={currentPage === totalPages}
                     className="px-3 py-1 text-sm bg-gray-200 rounded-md hover:bg-gray-400"
                   >
@@ -598,7 +647,10 @@ const Pembimbing = ({ isLoggedIn }) => {
                     name="nama_pembimbing"
                     value={updateData.nama_pembimbing}
                     onChange={(e) =>
-                      setUpdateData({ ...updateData, nama_pembimbing: e.target.value })
+                      setUpdateData({
+                        ...updateData,
+                        nama_pembimbing: e.target.value,
+                      })
                     }
                     className="flex items-center w-full h-10 pl-3 mt-2 mb-3 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
                     placeholder="Nama"
@@ -662,6 +714,28 @@ const Pembimbing = ({ isLoggedIn }) => {
                       }
                       className="flex items-center w-full h-10 pl-3 mt-2 mb-3 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
                       placeholder="Password"
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="foto"
+                      className="text-sm font-bold leading-tight tracking-normal text-gray-800"
+                    >
+                      Foto (Kosongkan jika tidak ingin mengubah)
+                    </label>
+                    <input
+                      type="file"
+                      id="foto_pembimbing"
+                      name="foto_pembimbing"
+                      onChange={(e) => {
+                        const { files } = e.target;
+                        setUpdateData((prevData) => ({
+                          ...prevData,
+                          foto_pembimbing: files ? files[0] : null,
+                        }));
+                      }}
+                      className="flex items-center w-full h-10 pl-3 mt-2 mb-3 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
                     />
                   </div>
 

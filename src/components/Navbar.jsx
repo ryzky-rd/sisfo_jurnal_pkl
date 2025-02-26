@@ -12,6 +12,9 @@ export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [cookies, setCookie, removeCookie] = useCookies(["token"]);
   const router = useRouter();
+  const [setting, setSetting] = useState({
+    gambar_setting: "",
+  });
 
   useEffect(() => {
     checkLoginStatus();
@@ -23,8 +26,8 @@ export default function Navbar() {
     setIsLoggedIn(!!token);
   };
 
-  // useEffect dan fungsi fetch data dikomentari
-  /*
+  //useEffect dan fungsi fetch data dikomentari
+  
   useEffect(() => {
     fecthDataSetting();
   }, []);
@@ -37,7 +40,7 @@ export default function Navbar() {
       console.error("Error fetching data setting", error);
     }
   };
-  */
+  
 
   const toggleNavbar = () => {
     setIsOpen(!isOpen);
@@ -63,7 +66,7 @@ export default function Navbar() {
               <Link href={"/"} aria-label="Kembali ke Beranda">
                 <img
                   className="h-10 sm:h-14 w-auto"
-                  src="/images/neper.png"
+                  src={setting.gambar_setting}
                   alt="Logo Sekolah"
                 />
               </Link>

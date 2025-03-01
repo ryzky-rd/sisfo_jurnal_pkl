@@ -51,6 +51,9 @@ const Siswa = ({ isLoggedIn }) => {
   const [kelasList, setKelasList] = useState([]); // Tambahkan state untuk daftar kelas
   const [jurusanList, setJurusanList] = useState([]); // Tambahkan state untuk daftar jurusan
 
+  const [pembimbings, setPembimbings] = useState([]);
+  const [perusahaans, setPerusahaans] = useState([]);
+
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -282,6 +285,25 @@ const Siswa = ({ isLoggedIn }) => {
     }
     return <p>Loading...</p>; // or display loading indicator
   }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const pembimbingResponse = await fetch(`${BASE_URL}/api/pembimbing`);
+        const pembimbingData = await pembimbingResponse.json();
+        setPembimbings(pembimbingData.data);
+
+        const perusahaanResponse = await fetch(`${BASE_URL}/api/perusahaan`);
+        const perusahaanData = await perusahaanResponse.json();
+        setPerusahaans(perusahaanData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <>
       <Head>

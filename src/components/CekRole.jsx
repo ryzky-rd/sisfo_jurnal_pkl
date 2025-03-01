@@ -7,6 +7,7 @@ import { BASE_URL } from "./layoutsAdmin/apiConfig";
 const CekRole = () => {
   const [cookies] = useCookies(["token"]);
   const [role, setRole] = useState("");
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -24,12 +25,11 @@ const CekRole = () => {
         },
       };
 
-      // Tentukan endpoint berdasarkan URL saat ini
+      // Determine endpoint based on current URL
       const currentUrl = window.location.href;
       const endpoint = router.pathname === "/pelanggan/invoice"
         ? `${BASE_URL}/api/authpelanggan/cekToken/`
         : `${BASE_URL}/api/auth/cekToken/`;
-
 
       try {
         const response = await axios.get(endpoint, config);
@@ -45,14 +45,19 @@ const CekRole = () => {
         if (error.response) {
           console.error("Response data:", error.response.data);
           console.error("Response status:", error.response.status);
-          console.error("Response headers:", error.response.headers);
         }
         router.push("/auth/login");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchDataRole();
   }, [cookies.token, router]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return role;
 };

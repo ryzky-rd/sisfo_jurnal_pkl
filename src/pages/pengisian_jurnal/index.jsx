@@ -1,34 +1,106 @@
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
 import Head from "next/head";
 import { BASE_URL } from "@/components/layoutsAdmin/apiConfig";
+import Swal from 'sweetalert2';
 import { useCookies } from "react-cookie";
 
 export default function UserProfile() {
   const [formData, setFormData] = useState({
-    firstName: "Jane",
-    lastName: "Ferguson",
-    email: "",
-    profession: "",
-    bio: "",
+    tanggal_pengisian: "",
+    nama_pekerjaan: "",
+    deskripsi_pekerjaan: "",
+    id_siswa: "",
+    id_pembimbing: "",
+    id_perusahaan: "",
   });
 
-  const [imageError, setImageError] = useState(false);
-
-  const fallbackImageUrl = "/default-avatar.png";
+  const [pembimbings, setPembimbings] = useState([]);
+  const [perusahaans, setPerusahaans] = useState([]);
+  const [cookies] = useCookies(["token"]);
 
   useEffect(() => {
-    // Set initial state or perform any side effects here
-    // This ensures that the component behaves the same on server and client
-  }, []);
+    const fetchData = async () => {
+      try {
+        const pembimbingResponse = await fetch(`${BASE_URL}/api/pembimbing`);
+        const pembimbingData = await pembimbingResponse.json();
+        setPembimbings(pembimbingData.data);
+
+        const perusahaanResponse = await fetch(`${BASE_URL}/api/perusahaan`);
+        const perusahaanData = await perusahaanResponse.json();
+        setPerusahaans(perusahaanData);
+
+        const token = cookies.token;
+        console.log("Token from cookies:", token);
+
+        if (token) {
+          const payload = token.split('.')[1];
+          const decodedPayload = JSON.parse(atob(payload));
+          console.log("Decoded Payload:", decodedPayload);
+          setFormData((prevData) => ({
+            ...prevData,
+            id_siswa: decodedPayload.id,
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, [cookies.token]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Data:", formData);
+    console.log("Form Data before submission:", formData);
+  
+    try {
+      const response = await fetch(`${BASE_URL}/api/jurnal`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tanggal_pengisian: new Date(),
+          nama_pekerjaan: formData.nama_pekerjaan,
+          deskripsi_pekerjaan: formData.deskripsi_pekerjaan,
+          id_siswa: formData.id_siswa,
+          id_pembimbing: formData.id_pembimbing,
+          id_perusahaan: formData.id_perusahaan,
+        }),
+      });
+  
+      if (!response.ok) {
+        const errorResult = await response.json();
+        throw new Error(errorResult.message || "Failed to create journal entry");
+      }
+  
+      const result = await response.json();
+      console.log("Journal entry created:", result);
+  
+      setFormData({
+        tanggal_pengisian: "",
+        nama_pekerjaan: "",
+        deskripsi_pekerjaan: "",
+        id_siswa: "",
+        id_pembimbing: "",
+        id_perusahaan: "",
+      });
+
+      await Swal.fire({
+        title: 'Success!',
+        text: 'Pengisian jurnal harian telah berhasil.',
+        icon: 'success',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#3b82f6',
+        showCloseButton: false,
+      });
+
+      window.location.reload();
+
+    } catch (error) {
+      console.error("Error creating journal entry:", error);
+    }
   };
 
   return (
@@ -36,97 +108,94 @@ export default function UserProfile() {
       <Head>
         <title>Pengisian Jurnal PKL</title>
       </Head>
-      <div className="">
-        <h3 className="mx-5 my-4 text-2xl font-bold">Pengisian Jurnal PKL</h3>
-      <form className="mx-5">
-        <div className="relative z-0 w-full mb-5 group">
-          <input
-            type="text"
-            name="nama_pekerjaan"
-            id="nama_pekerjaan"
-            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-            placeholder=" "
-            required
-          />
-          <label
-            htmlFor="nama_pekerjaan"
-            className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-          >
-            Nama Pekerjaan
-          </label>
+      <div className="flex justify-center items-center min-h-screen p-4">
+        <div className="w-full max-w-2xl bg-white p-6 rounded-xl shadow-lg">
+          <h3 className="text-2xl font-bold text-center mb-6">Pengisian Jurnal PKL</h3>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="flex flex-col">
+              <label className="text-gray-600 text-sm">Tanggal Pengisian</label>
+              <input
+                type="date"
+                name="tanggal_pengisian"
+                onChange={handleChange}
+                required
+                className="input w-full"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="text-gray-600 text-sm">Nama Pekerjaan</label>
+              <input
+                type="text"
+                name="nama_pekerjaan"
+                onChange={handleChange}
+                required
+                className="input w-full"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="text-gray-600 text-sm">Deskripsi Pekerjaan</label>
+              <input
+                type="text"
+                name="deskripsi_pekerjaan"
+                onChange={handleChange}
+                required
+                className="input w-full"
+              />
+            </div>
+            <input
+              type="hidden"
+              name="id_siswa"
+              value={formData.id_siswa}
+            />
+            <div className="flex flex-col">
+              <label className="text-gray-600 text-sm">Pilih Pembimbing</label>
+              <select
+                name="id_pembimbing"
+                onChange={handleChange}
+                required
+                className="input w-full"
+              >
+                <option value="">Select Pembimbing</option>
+                {pembimbings.map((p) => (
+                  <option key={p.id} value={p.id}>{p.nama_pembimbing}</option>
+                ))}
+              </select>
+            </div>
+            <div className="flex flex-col">
+              <label className="text-gray-600 text-sm">Pilih Perusahaan</label>
+              <select
+                name="id_perusahaan"
+                onChange={handleChange}
+                required
+                className="input w-full"
+              >
+                <option value="">Select Perusahaan</option>
+                {perusahaans.map((p) => (
+                  <option key={p.id} value={p.id}>{p.nama_perusahaan}</option>
+                ))}
+              </select>
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-200"
+            >
+              Submit
+            </button>
+          </form>
         </div>
-        <div className="relative z-0 w-full mb-5 group">
-          <input
-            type="text"
-            name="deskripsi_pekerjaan"
-            id="deskripsi_pekerjaan"
-            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-            placeholder=" "
-            required
-          />
-          <label
-            htmlFor="deskripsi_pekerjaan"
-            className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-          >
-            Deskripsi Pekerjaan
-          </label>
-        </div>
-        <div className="relative z-0 w-full mb-5 group">
-          <input
-            type="text"
-            name="nama_perusahaan"
-            id="nama_perusahaan"
-            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-            placeholder=" "
-            required
-          />
-          <label
-            htmlFor="nama_perusahaan"
-            className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-          >
-            Nama Perusahaan
-          </label>
-        </div>
-        <div className="relative z-0 w-full mb-5 group">
-          <input
-            type="text"
-            name="pembimbing_sekolah"
-            id="pembimbing_sekolah"
-            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-            placeholder=" "
-            required
-          />
-          <label
-            htmlFor="pembimbing_sekolah"
-            className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-          >
-            Pembimbing Sekolah
-          </label>
-        </div>
-        <div className="relative z-0 w-full mb-5 group">
-          <input
-            type="text"
-            name="pembimbing_perusahaan"
-            id="pembimbing_perusahaan"
-            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-            placeholder=" "
-            required
-          />
-          <label
-            htmlFor="pembimbing_perusahaan"
-            className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-          >
-            Pembimbing Perusahaan
-          </label>
-        </div>
-        <button
-          type="submit"
-          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-10 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-        >
-          Submit
-        </button>
-      </form>  
       </div>
+      <style jsx>{`
+        .input {
+          border: 1px solid #d1d5db;
+          padding: 0.5rem;
+          border-radius: 0.5rem;
+          outline: none;
+          transition: border 0.2s;
+        }
+        .input:focus {
+          border-color: #3b82f6;
+        }
+      `}</style>
     </>
   );
 }

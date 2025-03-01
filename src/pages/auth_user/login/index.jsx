@@ -46,7 +46,7 @@ export default function Login() {
     }
 
     try {
-      const response = await axios.post(`${BASE_URL}/api/auth/loginsiswa`, {
+      const response = await axios.post(`${BASE_URL}/api/authsiswa/loginSiswa`, {
         email,
         password,
       });

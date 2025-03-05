@@ -3,8 +3,10 @@ import Head from "next/head";
 import { BASE_URL } from "@/components/layoutsAdmin/apiConfig";
 import Swal from 'sweetalert2';
 import { useCookies } from "react-cookie";
+import axios from "axios";
 
 export default function UserProfile() {
+  const [cookies] = useCookies(["token"]);
   const [formData, setFormData] = useState({
     tanggal_pengisian: "",
     nama_pekerjaan: "",
@@ -12,11 +14,17 @@ export default function UserProfile() {
     id_siswa: "",
     id_pembimbing: "",
     id_perusahaan: "",
+    nama: "",
+    email: "",
+    nis: "",
+    nisn: "",
+    kelas: "",
+    jurusan: "",
   });
-
   const [pembimbings, setPembimbings] = useState([]);
   const [perusahaans, setPerusahaans] = useState([]);
-  const [cookies] = useCookies(["token"]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,9 +48,27 @@ export default function UserProfile() {
             ...prevData,
             id_siswa: decodedPayload.id,
           }));
+
+          const userResponse = await axios.get(`${BASE_URL}/api/authsiswa/me`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          const { nama, email, nis, nisn, kelas, jurusan } = userResponse.data;
+          setFormData((prevData) => ({
+            ...prevData,
+            nama,
+            email,
+            nis,
+            nisn,
+            kelas,
+            jurusan,
+          }));
         }
       } catch (error) {
         console.error("Error fetching data:", error);
+        setError(error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
@@ -85,6 +111,12 @@ export default function UserProfile() {
         id_siswa: "",
         id_pembimbing: "",
         id_perusahaan: "",
+        nama: "",
+        email: "",
+        nis: "",
+        nisn: "",
+        kelas: "",
+        jurusan: "",
       });
 
       await Swal.fire({
@@ -102,6 +134,14 @@ export default function UserProfile() {
       console.error("Error creating journal entry:", error);
     }
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
 
   return (
     <>
@@ -174,6 +214,72 @@ export default function UserProfile() {
                   <option key={p.id} value={p.id}>{p.nama_perusahaan}</option>
                 ))}
               </select>
+            </div>
+            <div className="flex flex-col">
+              <label className="text-gray-600 text-sm">Nama</label>
+              <input
+                type="text"
+                name="nama"
+                value={formData.nama}
+                onChange={handleChange}
+                required
+                className="input w-full"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="text-gray-600 text-sm">Email</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="input w-full"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="text-gray-600 text-sm">NIS</label>
+              <input
+                type="text"
+                name="nis"
+                value={formData.nis}
+                onChange={handleChange}
+                required
+                className="input w-full"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="text-gray-600 text-sm">NISN</label>
+              <input
+                type="text"
+                name="nisn"
+                value={formData.nisn}
+                onChange={handleChange}
+                required
+                className="input w-full"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="text-gray-600 text-sm">Kelas</label>
+              <input
+                type="text"
+                name="kelas"
+                value={formData.kelas}
+                onChange={handleChange}
+                required
+                className="input w-full"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="text-gray-600 text-sm">Jurusan</label>
+              <input
+                type="text"
+                name="jurusan"
+                value={formData.jurusan}
+                onChange={handleChange}
+                required
+                className="input w-full"
+              />
             </div>
             <button
               type="submit"

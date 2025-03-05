@@ -816,13 +816,14 @@ export default function UserProfile() {
               </form>
             </div>
           </div>
+         </div>
         </main>
       </div>
     </>
   );
 }
 
-// Existing getServerSideProps remains the same
+{/* // Existing getServerSideProps remains the same */}
 export async function getServerSideProps(context) {
   const cookies = parseCookies(context);
   const isLoggedIn = !!cookies.token;

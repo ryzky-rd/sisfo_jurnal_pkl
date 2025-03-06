@@ -437,14 +437,13 @@ export default function UserProfile() {
     },
   });
 
-
-
   // State for Jawa Barat districts and subdistricts
   const [districts, setDistricts] = useState([]);
   const [subdistricts, setSubdistricts] = useState([]);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [id_user, setID] = useState(null);
   const [imageError, setImageError] = useState(false);
   const fallbackImageUrl = "/default-avatar.png";
 
@@ -499,6 +498,10 @@ export default function UserProfile() {
           headers: { Authorization: `Bearer ${cookies.token}` }, // Kirim token di header
         });
 
+        const { id } = response.data.data;
+        setID(id);
+        console.log("id:", id);
+
         console.log("cek data siswa", response.data);
         const {
           nama_lengkap,
@@ -538,10 +541,7 @@ export default function UserProfile() {
       setError(new Error("No token found. Please login first."));
       setLoading(false);
     }
-  }, [cookies.token] );
-
-    // const { id } = cookies.token;
-    // console.log("id:", id);
+  }, [cookies.token]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -580,12 +580,14 @@ export default function UserProfile() {
     try {
       // Kirim data yang diubah ke backend
       const response = await axios.patch(
-        `${BASE_URL}/api/siswa/${id}`,
-        formData,
+        `${BASE_URL}/api/siswa/${id_user}`,
+        formData
         // {
         //   headers: { Authorization: `Bearer ${cookies.token}` },
         // }
       );
+    
+
       console.log("Profile updated:", response.data);
       alert("Profile updated successfully!");
     } catch (error) {

@@ -124,6 +124,11 @@ const Pembimbing = ({ isLoggedIn }) => {
   };
   const handleChange = (e) => {
     const { name, value, files } = e.target;
+
+    if (name === "nip" && value.length > 16) {
+      return; // Mencegah input lebih dari 16 karakter
+    }
+
     setFormData((prevData) => ({
       ...prevData,
       [name]: files ? files[0] : value,
@@ -204,7 +209,7 @@ const Pembimbing = ({ isLoggedIn }) => {
     formDataToSend.append("nip", dataToSend.nip);
     formDataToSend.append("nama_pembimbing", dataToSend.nama_pembimbing);
     formDataToSend.append("email", dataToSend.email);
-    
+
     // Tambahkan foto jika ada
     if (formData.foto_pembimbing) {
       formDataToSend.append("foto", formData.foto_pembimbing);
@@ -309,7 +314,11 @@ const Pembimbing = ({ isLoggedIn }) => {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               {item.url_foto_pembimbing ? (
-                                <img src={item.url_foto_pembimbing} alt="Foto Pembimbing" className="w-16 h-16 object-cover" />
+                                <img
+                                  src={item.url_foto_pembimbing}
+                                  alt="Foto Pembimbing"
+                                  className="w-16 h-16 object-cover"
+                                />
                               ) : (
                                 "Foto tidak tersedia"
                               )}
@@ -518,10 +527,13 @@ const Pembimbing = ({ isLoggedIn }) => {
                     name="nip"
                     value={formData.nip}
                     onChange={handleChange}
-                    className="flex items-center w-full h-10 pl-3 mt-2 mb-3 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
+                    className="flex items-center w-full h-10 pl-3 mt-2 mb-1 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
                     placeholder="NIP"
                     required
                   />
+                  <p className="text-xs text-red-500 mb-2">
+                    Maksimal input NIP 16 karakter
+                  </p>
 
                   <div>
                     <label
@@ -667,12 +679,16 @@ const Pembimbing = ({ isLoggedIn }) => {
                     id="nip"
                     name="nip"
                     value={updateData.nip}
-                    onChange={(e) =>
-                      setUpdateData({ ...updateData, nip: e.target.value })
-                    }
-                    className="flex items-center w-full h-10 pl-3 mt-2 mb-3 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
+                    onChange={(e) => {
+                      if (e.target.value.length > 16) return; // Batasi input maksimal 16 karakter
+                      setUpdateData({ ...updateData, nip: e.target.value });
+                    }}
+                    className="flex items-center w-full h-10 pl-3 mt-2 mb-1 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
                     placeholder="NIP"
                   />
+                  <p className="text-xs text-red-500 mb-2">
+                    Maksimal input NIP 16 karakter
+                  </p>
 
                   <div>
                     <label

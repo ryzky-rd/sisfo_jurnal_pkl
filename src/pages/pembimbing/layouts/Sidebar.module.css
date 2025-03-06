@@ -1,0 +1,22 @@
+.dropdownEnter {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+}
+
+.dropdownEnterActive {
+    max-height: 500px;
+    transition: max-height 300ms ease-in, opacity 300ms ease-in;
+    opacity: 1;
+}
+
+.dropdownExit {
+    max-height: 500px;
+    opacity: 1;
+}
+
+.dropdownExitActive {
+    max-height: 0;
+    transition: max-height 300ms ease-out, opacity 300ms ease-out;
+    opacity: 0;
+}

@@ -52,7 +52,7 @@ export default function Login() {
       });
 
       setCookie("token", response.data.token, { path: "/" }); // coba
-      router.push("/pelanggan/invoice");
+      router.push("/pembimbing/kelas");
     } catch (error) {
       // Perbaikan penanganan error
       if (error.response && error.response.status === 401) {

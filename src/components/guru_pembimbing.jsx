@@ -77,7 +77,7 @@ export default function Paket() {
 
   return (
     <section className="relative -mt-5 bg-transparent">
-      <div className="mt-10" data-aos="fade-up" data-aos-duration="800">
+      <div className="mt-14" data-aos="fade-up" data-aos-duration="800">
         <h1 className="font-extrabold text-3xl lg:text-3xl text-center text-gray-800">
           Daftar Guru Pembimbing
         </h1>

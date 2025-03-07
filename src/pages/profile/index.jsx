@@ -407,6 +407,7 @@ import { BASE_URL } from "@/components/layoutsAdmin/apiConfig";
 import { parseCookies } from "nookies";
 import { useCookies } from "react-cookie";
 import axios from "axios";
+import Swal from 'sweetalert2';
 
 export default function UserProfile() {
   const [cookies] = useCookies(["token"]); // Ambil token dari cookie
@@ -415,8 +416,8 @@ export default function UserProfile() {
     email: "",
     nis: "",
     nisn: "",
-    kelas: "",
-    jurusan: "",
+    id_kelas: "",
+    id_jurusan: "",
     detailAlamatSiswa: {
       alamat_lengkap: "",
       desa: "",
@@ -446,6 +447,8 @@ export default function UserProfile() {
   const [id_user, setID] = useState(null);
   const [imageError, setImageError] = useState(false);
   const fallbackImageUrl = "/default-avatar.png";
+  const [kelasOptions, setKelasOptions] = useState([]);
+  const [jurusanOptions, setJurusanOptions] = useState([]);
 
   // Fetch Jawa Barat districts on component mount
   useEffect(() => {
@@ -518,15 +521,15 @@ export default function UserProfile() {
           email,
           nis,
           nisn,
-          kelas: kelasInfo.nama_kelas,
-          jurusan: jurusanInfo.nama_jurusan,
+          kelas: kelasInfo?.nama_kelas || "", 
+          jurusan: jurusanInfo?.nama_jurusan || "",
           detailAlamatSiswa: {
             ...detailAlamatSiswa,
-            provinsi: "JAWA BARAT", // Ensure Jawa Barat is set
+            provinsi: "JAWA BARAT",
           },
-          jurusanInfo,
-          kelasInfo,
-        });
+          jurusanInfo: jurusanInfo || {}, 
+          kelasInfo: kelasInfo || {},
+        });        
       } catch (error) {
         console.error("Error fetching user data:", error);
         setError(error);
@@ -543,37 +546,52 @@ export default function UserProfile() {
     }
   }, [cookies.token]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const kelasRes = await axios.get(`${BASE_URL}/api/kelas`);
+        const jurusanRes = await axios.get(`${BASE_URL}/api/jurusan`);
+  
+        console.log("Data Kelas:", kelasRes.data); // Cek data kelas dari API
+        console.log("Data Jurusan:", jurusanRes.data); // Cek data jurusan dari API
+  
+        // Pastikan struktur data sesuai sebelum diset
+        setKelasOptions(kelasRes.data || []); 
+        setJurusanOptions(jurusanRes.data || []);
+  
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
+  
+
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    // Handle specific address-related changes
-    if (name.startsWith("detailAlamatSiswa.")) {
+  
+    if (name === "kelas" || name === "jurusan") {
+      setFormData({ ...formData, [name]: parseInt(value, 10) });
+    }  
+  
+    if (name === "kelas" || name === "jurusan") {
+      setFormData({ ...formData, [name]: parseInt(value) });
+    } else if (name.startsWith("detailAlamatSiswa.")) {
       const field = name.split(".")[1];
-
-      // Special handling for district selection
-      if (field === "kota_kabupaten") {
-        // Reset kecamatan when kabupaten changes
-        setFormData((prevData) => ({
-          ...prevData,
-          detailAlamatSiswa: {
-            ...prevData.detailAlamatSiswa,
-            [field]: value,
-            kecamatan: "", // Reset kecamatan
-          },
-        }));
-      } else {
-        setFormData((prevData) => ({
-          ...prevData,
-          detailAlamatSiswa: {
-            ...prevData.detailAlamatSiswa,
-            [field]: value,
-          },
-        }));
-      }
+      setFormData((prevData) => ({
+        ...prevData,
+        detailAlamatSiswa: {
+          ...prevData.detailAlamatSiswa,
+          [field]: value,
+          ...(field === "kota_kabupaten" && { kecamatan: "" }), // Reset kecamatan jika kabupaten berubah
+        },
+      }));
     } else {
       setFormData({ ...formData, [name]: value });
     }
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -581,20 +599,41 @@ export default function UserProfile() {
       // Kirim data yang diubah ke backend
       const response = await axios.patch(
         `${BASE_URL}/api/siswa/${id_user}`,
-        formData
-        // {
-        //   headers: { Authorization: `Bearer ${cookies.token}` },
-        // }
+        formData,
+        {
+          headers: { Authorization: `Bearer ${cookies.token}` },
+        }
       );
-    
-
+  
       console.log("Profile updated:", response.data);
-      alert("Profile updated successfully!");
+  
+      // Tampilkan SweetAlert berhasil
+      Swal.fire({
+        title: "Berhasil!",
+        text: "Data telah disimpan.",
+        icon: "success",
+        confirmButtonText: "OK",
+        customClass: {
+          confirmButton: "bg-blue-500 text-white px-4 py-2 rounded"
+        }
+      }).then(() => {
+        // Refresh halaman setelah menekan OK
+        window.location.reload();
+      });
+  
     } catch (error) {
       console.error("Error updating profile:", error);
-      alert("Failed to update profile.");
+  
+      // Tampilkan SweetAlert gagal
+      Swal.fire({
+        title: 'Gagal!',
+        text: 'Gagal memperbarui profil.',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
     }
   };
+  
 
   if (loading) {
     return <div>Loading...</div>;
@@ -726,29 +765,43 @@ export default function UserProfile() {
                     />
                   </div>
                   <div className="mt-4">
-                    <label className="block mb-2 text-sm font-medium text-indigo-900">
-                      Kelas
-                    </label>
-                    <input
-                      type="text"
-                      name="kelas"
-                      value={formData.kelas}
-                      onChange={handleChange}
-                      className="w-full p-2.5 bg-indigo-50 border border-indigo-300 text-indigo-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
-                    />
-                  </div>
-                  <div className="mt-4">
-                    <label className="block mb-2 text-sm font-medium text-indigo-900">
-                      Jurusan
-                    </label>
-                    <input
-                      type="text"
-                      name="jurusan"
-                      value={formData.jurusan}
-                      onChange={handleChange}
-                      className="w-full p-2.5 bg-indigo-50 border border-indigo-300 text-indigo-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
-                    />
-                  </div>
+        <label className="block mb-2 text-sm font-medium text-indigo-900">
+          Kelas
+        </label>
+        <select
+          name="kelas"
+          value={formData.kelas}
+          onChange={handleChange}
+          className="w-full p-2.5 bg-indigo-50 border border-indigo-300 text-indigo-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+        >
+          <option value="">Pilih Kelas</option>
+          {kelasOptions.map((kelas) => (
+            <option key={kelas.id} value={kelas.id}>
+              {kelas.nama_kelas}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Dropdown Jurusan */}
+      <div className="mt-4">
+        <label className="block mb-2 text-sm font-medium text-indigo-900">
+          Jurusan
+        </label>
+        <select
+          name="jurusan"
+          value={formData.jurusan}
+          onChange={handleChange}
+          className="w-full p-2.5 bg-indigo-50 border border-indigo-300 text-indigo-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+        >
+          <option value="">Pilih Jurusan</option>
+          {jurusanOptions.map((jurusan) => (
+            <option key={jurusan.id} value={jurusan.id}>
+              {jurusan.nama_jurusan}
+            </option>
+          ))}
+        </select>
+      </div>
 
                   {/* Data Alamat */}
                   <div className="mt-6">

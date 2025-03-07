@@ -7,10 +7,10 @@ import AdminNavbar from "@/components/layoutsAdmin/AdminNavbar.js";
 import HeaderStats from "@/components/layoutsAdmin/HeaderStats";
 import FooterAdmin from "@/components/layoutsAdmin/FooterAdmin";
 import Sidebar from "./sidebar";
-import CekAkses from "@/components/CekAkses";
+// import CekAkses from "@/components/CekAkses";
 
 export default function AdminLayout({ children }) {
-  CekAkses();
+  // CekAkses();
 
   return (
     <>

@@ -9,7 +9,7 @@ export default function Hero() {
           <h1 className="text-3xl text-center sm:mx-auto md:mx-28 font-bold leading-tight lg:text-5xl">
             PENDATAAN JURNAL PKL SMKN 1 KOTA CIREBON
           </h1>
-          <h1 className="text-center md:mx-24 sm:mx-auto px-auto mt-8 mb-4 text-lg leading-tight">
+          <h1 className="text-center md:mx-24 sm:mx-auto px-auto mt-8 mb-4 text-md leading-tight">
             SISTEM PENDATAAN JURNAL YANG EFISIEN, AMAN, DAN TERINTEGRASI UNTUK MEMUDAHKAN SISWA DAN PEMBIMBING DALAM PROSES PKL
           </h1>
           <div className="flex justify-center mt-4 lg:mx-auto">

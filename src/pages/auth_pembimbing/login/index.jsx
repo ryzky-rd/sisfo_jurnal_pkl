@@ -46,7 +46,7 @@ export default function Login() {
     }
 
     try {
-      const response = await axios.post(`${BASE_URL}/api/auth/loginpembimbing`, {
+      const response = await axios.post(`${BASE_URL}/api/authpembimbing/loginpembimbing`, {
         email,
         password,
       });

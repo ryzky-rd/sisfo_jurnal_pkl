@@ -15,8 +15,8 @@ export default function Sidebar() {
   const router = useRouter();
   const [cookies, setCookie] = useCookies(["token"]);
 
-  // akses berdasarkan role
-  const role = CekRole();
+  // // akses berdasarkan role
+  // const role = CekRole();
 
   // SECTION Fungsi untuk menghapus cookie berdasarkan namanya
   function deleteCookie(name) {
@@ -105,172 +105,28 @@ export default function Sidebar() {
               </div>
             </div>
 
+            
+
             <div className="flex flex-col list-none md:flex-col md:min-w-full">
-              {/* Dropdown for Pembayaran, Testimoni, Kategori Website, and Syarat Ketentuan */}
-              <li className="items-center">
-                <div className="relative">
-                  <button
-                    className="flex items-center w-full py-3 text-xs font-bold uppercase"
-                    onClick={() => {
-                      setDropdownOpenPembayaran(!dropdownOpenPembayaran);
-                    }}
-                  >
-                    <i className="fa-solid fa-user-tie mr-3 text-sm"></i>
-                    <span>User</span>
-                    <i
-                      className={`fas fa-chevron-${
-                        dropdownOpenPembayaran ? "up" : "down"
-                      } mx-2`}
-                    ></i>
-                  </button>
-                  <CSSTransition
-                    in={dropdownOpenPembayaran}
-                    timeout={300}
-                    classNames={{
-                      enter: styles.dropdownEnter,
-                      enterActive: styles.dropdownEnterActive,
-                      exit: styles.dropdownExit,
-                      exitActive: styles.dropdownExitActive,
-                    }}
-                    unmountOnExit
-                  >
-                    <ul
-                      className="left-0 w-full bg-white shadow-lg px-3"
-                      style={{ width: "200px" }}
-                    >
-                      <li className="py-2">
-                        <Link
-                          href={"/admin/siswa"}
-                          className={`text-blueGray-700 hover:text-blueGray-500 font-semibold text-sm ${
-                            router.pathname.indexOf("/admin/siswa") !== -1
-                              ? "bg-amber-300 text-black rounded-lg px-4 py-2"
-                              : ""
-                          }`}
-                        >
-                          Siswa
-                        </Link>
-                      </li>
-                      <li className="py-2">
-                        <Link
-                          href={"/admin/guru_pembimbing"}
-                          className={`text-blueGray-700 hover:text-blueGray-500 font-semibold text-sm ${
-                            router.pathname.indexOf("/admin/guru_pembimbing") !== -1
-                              ? "bg-amber-300 text-black rounded-lg px-4 py-2"
-                              : ""
-                          }`}
-                        >
-                          Guru Pembimbing
-                        </Link>
-                      </li>
-                      <li className="py-2 pb-4">
-                        <Link
-                          href={"/admin/administrators"}
-                          className={`text-blueGray-700 hover:text-blueGray-500 font-semibold text-sm ${
-                            router.pathname.indexOf("/admin/administrators") !== -1
-                              ? "bg-amber-300 text-black rounded-lg px-4 py-2"
-                              : ""
-                          }`}
-                        >
-                          Administrator
-                        </Link>
-                      </li>
-                    </ul>
-                  </CSSTransition>
-                </div>
-              </li>
-
-              {/* Dropdown for Manajemen */}
-              <li className="items-center">
-                <div className="relative">
-                  <button
-                    className="flex items-center w-full py-3 text-xs font-bold uppercase"
-                    onClick={() => {
-                      setDropdownOpenManajemen(!dropdownOpenManajemen);
-                    }}
-                  >
-                    <i className="fa-solid fa-file mr-3 text-sm"></i>
-                    <span>Manajemen</span>
-                    <i
-                      className={`fas fa-chevron-${
-                        dropdownOpenManajemen ? "up" : "down"
-                      } mx-2`}
-                    ></i>
-                  </button>
-                  <CSSTransition
-                    in={dropdownOpenManajemen}
-                    timeout={300}
-                    classNames={{
-                      enter: styles.dropdownEnter,
-                      enterActive: styles.dropdownEnterActive,
-                      exit: styles.dropdownExit,
-                      exitActive: styles.dropdownExitActive,
-                    }}
-                    unmountOnExit
-                  >
-                    <ul
-                      className="left-0 w-full bg-white shadow-lg px-3"
-                      style={{ width: "200px" }}
-                    >
-                      <li className="py-2">
-                        <Link
-                          href={"/admin/jurusan"}
-                          className={`text-blueGray-700 hover:text-blueGray-500 font-semibold text-sm ${
-                            router.pathname.indexOf("/admin/jurusan") !== -1
-                              ? "bg-amber-300 text-black rounded-lg px-4 py-2"
-                              : ""
-                          }`}
-                        >
-                          Jurusan
-                        </Link>
-                      </li>
-                      <li className="py-2">
-                        <Link
-                          href={"/admin/kelas"}
-                          className={`text-blueGray-700 hover:text-blueGray-500 font-semibold text-sm ${
-                            router.pathname.indexOf("/admin/kelas") !== -1
-                              ? "bg-amber-300 text-black rounded-lg px-4 py-2"
-                              : ""
-                          }`}
-                        >
-                          Kelas
-                        </Link>
-                      </li>
-                      <li className="py-2 pb-4">
-                        <Link
-                          href={"/admin/perusahaan"}
-                          className={`text-blueGray-700 hover:text-blueGray-500 font-semibold text-sm ${
-                            router.pathname.indexOf("/admin/perusahaan") !== -1
-                              ? "bg-amber-300 text-black rounded-lg px-4 py-2"
-                              : ""
-                          }`}
-                        >
-                          Perusahaan
-                        </Link>
-                      </li>
-                    </ul>
-                  </CSSTransition>
-                </div>
-              </li>
-
-              <li className="items-center">
+            <li className="items-center">
                 <Link
-                  href={"/admin/backup_data"}
+                  href={"/admin/setting"}
                   className={
                     "text-xs uppercase py-3 font-bold block " +
-                    (router.pathname.indexOf("/admin/backup_data") !== -1
+                    (router.pathname.indexOf("/admin/setting") !== -1
                       ? "bg-amber-300 text-black rounded-lg px-4 py-2"
                       : "text-blueGray-700 hover:text-blueGray-500")
                   }
                 >
                   <i
                     className={
-                      "fa-solid fa-cloud-arrow-up mr-2 text-sm " +
-                      (router.pathname.indexOf("/admin/backup_data") !== -1
+                      "fa-solid fa-gear mr-2 text-sm " +
+                      (router.pathname.indexOf("/admin/setting") !== -1
                         ? "opacity-75"
                         : "text-blueGray-300")
                     }
                   ></i>{" "}
-                  Backup Data
+                  Rekap Pengisian Jurnal Siswa
                 </Link>
               </li>
 
@@ -292,7 +148,28 @@ export default function Sidebar() {
                         : "text-blueGray-300")
                     }
                   ></i>{" "}
-                  Setting
+                  Rekap Absen Jurnal Siswa
+                </Link>
+              </li>
+              <li className="items-center">
+                <Link
+                  href={"/admin/backup_data"}
+                  className={
+                    "text-xs uppercase py-3 font-bold block " +
+                    (router.pathname.indexOf("/admin/backup_data") !== -1
+                      ? "bg-amber-300 text-black rounded-lg px-4 py-2"
+                      : "text-blueGray-700 hover:text-blueGray-500")
+                  }
+                >
+                  <i
+                    className={
+                      "fa-solid fa-cloud-arrow-up mr-2 text-sm " +
+                      (router.pathname.indexOf("/admin/backup_data") !== -1
+                        ? "opacity-75"
+                        : "text-blueGray-300")
+                    }
+                  ></i>{" "}
+                  Backup Data
                 </Link>
               </li>
 

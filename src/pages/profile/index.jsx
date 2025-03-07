@@ -494,8 +494,6 @@ export default function UserProfile() {
   // Existing user data fetch effect
   useEffect(() => {
     const fetchUserData = async () => {
-      console.log("cek token :", cookies.token);
-
       try {
         const response = await axios.get(`${BASE_URL}/api/authsiswa/me`, {
           headers: { Authorization: `Bearer ${cookies.token}` }, // Kirim token di header
@@ -503,9 +501,7 @@ export default function UserProfile() {
 
         const { id } = response.data.data;
         setID(id);
-        console.log("id:", id);
 
-        console.log("cek data siswa", response.data);
         const {
           nama_lengkap,
           email,
@@ -596,15 +592,23 @@ export default function UserProfile() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Flatten detailAlamatSiswa ke dalam formData
+      const payload = {
+        ...formData,
+        ...formData.detailAlamatSiswa, // Spread detailAlamatSiswa ke level atas
+      };
+
+      // Hapus detailAlamatSiswa dari payload karena tidak diperlukan di backend
+      delete payload.detailAlamatSiswa;
+
       // Kirim data yang diubah ke backend
       const response = await axios.patch(
         `${BASE_URL}/api/siswa/${id_user}`,
-        formData,
+        payload,
         {
           headers: { Authorization: `Bearer ${cookies.token}` },
         }
       );
-  
       console.log("Profile updated:", response.data);
   
       // Tampilkan SweetAlert berhasil

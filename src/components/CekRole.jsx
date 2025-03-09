@@ -35,9 +35,7 @@ const CekRole = () => {
       };
 
       // Tentukan endpoint berdasarkan URL saat ini
-      const endpoint = router.pathname === "/pelanggan/invoice"
-        ? `${BASE_URL}/api/authpelanggan/cekToken/`
-        : `${BASE_URL}/api/auth/cekToken/`;
+      const endpoint = router.pathname ===  `${BASE_URL}/api/auth/cekToken/`;
 
       try {
         const response = await axios.get(endpoint, config);

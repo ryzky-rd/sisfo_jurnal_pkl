@@ -52,7 +52,7 @@ export default function Login() {
       });
 
       setCookie("token", response.data.token, { path: "/" }); // coba
-      router.push("/pembimbing/kelas");
+      router.push("/pembimbing/rekap_pengisian_jurnal");
     } catch (error) {
       // Perbaikan penanganan error
       if (error.response && error.response.status === 401) {

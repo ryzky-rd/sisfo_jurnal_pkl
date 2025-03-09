@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import NotificationDropdown from "@/components/layoutsAdmin/NotificationDropdown";
-import UserDropdown from "@/components/layoutsAdmin/UserDropdown";
 import axios from "axios";
 import { useCookies } from "react-cookie";
 import CekRole from "@/components/CekRole";
@@ -34,7 +32,7 @@ export default function Sidebar() {
       };
       await axios.post(`${BASE_URL}/api/auth/logout`, null, config);
       deleteCookie("token");
-      router.push("/auth/login");
+      router.push("/auth_pembimbing/login");
     } catch (error) {}
   };
   const [dropdownOpenPembayaran, setDropdownOpenPembayaran] = useState(
@@ -110,45 +108,45 @@ export default function Sidebar() {
             <div className="flex flex-col list-none md:flex-col md:min-w-full">
             <li className="items-center">
                 <Link
-                  href={"/admin/setting"}
+                  href={"/pembimbing/rekap_pengisian_jurnal"}
                   className={
                     "text-xs uppercase py-3 font-bold block " +
-                    (router.pathname.indexOf("/admin/setting") !== -1
+                    (router.pathname.indexOf("/pembimbing/rekap_pengisian_jurnal") !== -1
                       ? "bg-amber-300 text-black rounded-lg px-4 py-2"
                       : "text-blueGray-700 hover:text-blueGray-500")
                   }
                 >
                   <i
                     className={
-                      "fa-solid fa-gear mr-2 text-sm " +
-                      (router.pathname.indexOf("/admin/setting") !== -1
+                      "fa-solid fa-list-ul mr-2 text-sm " +
+                      (router.pathname.indexOf("/pembimbing/rekap_pengisian_jurnal") !== -1
                         ? "opacity-75"
                         : "text-blueGray-300")
                     }
                   ></i>{" "}
-                  Rekap Pengisian Jurnal Siswa
+                  Rekap Pengisian Jurnal
                 </Link>
               </li>
 
               <li className="items-center">
                 <Link
-                  href={"/admin/setting"}
+                  href={"/pembimbing/rekap_absen"}
                   className={
                     "text-xs uppercase py-3 font-bold block " +
-                    (router.pathname.indexOf("/admin/setting") !== -1
+                    (router.pathname.indexOf("/pembimbing/rekap_absen") !== -1
                       ? "bg-amber-300 text-black rounded-lg px-4 py-2"
                       : "text-blueGray-700 hover:text-blueGray-500")
                   }
                 >
                   <i
                     className={
-                      "fa-solid fa-gear mr-2 text-sm " +
-                      (router.pathname.indexOf("/admin/setting") !== -1
+                      "fa-solid fa-list-ul mr-2 text-sm " +
+                      (router.pathname.indexOf("/pembimbing/rekap_absen") !== -1
                         ? "opacity-75"
                         : "text-blueGray-300")
                     }
                   ></i>{" "}
-                  Rekap Absen Jurnal Siswa
+                  Rekap Absen Siswa
                 </Link>
               </li>
               <li className="items-center">

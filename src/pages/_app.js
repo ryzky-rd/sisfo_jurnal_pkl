@@ -8,14 +8,14 @@ import Head from "next/head";
 import ButtonWa from "@/components/elements/ButtonWa";
 export default function App({ Component, pageProps, router }) {
     const isInsideAdmin = router.pathname.startsWith("/admin");
-    const isInsidePelanggan = router.pathname.startsWith("/pelanggan");
-    const isLoginPage = router.pathname === "/auth/login"; // Tambahkan kondisi untuk halaman login
-    const isLoginUser = router.pathname === "/auth_user/login"; // Tambahkan kondisi untuk halaman login
+    const isLoginPage = router.pathname === "/auth/login"; // Tambahkan kondisi untuk halaman login admin
+    const isLoginUser = router.pathname === "/auth_user/login"; // Tambahkan kondisi untuk halaman login user
     const isRegisUser = router.pathname === "/auth_user/register"; // Tambahkan kondisi untuk halaman login
-    const isLoginPembimbing = router.pathname === "/auth_pembimbing/login"; // Tambahkan kondisi untuk halaman login
-    const isProfile = router.pathname === "/profile"; // Tambahkan kondisi untuk halaman login
+    const isLoginPembimbing = router.pathname === "/auth_pembimbing/login"; // Tambahkan kondisi untuk halaman login pembimbing
+    const isProfile = router.pathname === "/profile"; // Tambahkan kondisi untuk halaman profile
+    const isInsidePembimbing = router.pathname.startsWith("/pembimbing"); // Tambahkan kondisi untuk halaman pembimbing
 
-    if (isInsideAdmin || isInsidePelanggan || isLoginPage || isLoginUser || isRegisUser || isLoginPembimbing || isProfile) {
+    if (isInsideAdmin || isInsidePembimbing || isLoginPage || isLoginUser || isRegisUser || isLoginPembimbing || isProfile) {
         // Perbarui kondisi untuk mengembalikan hanya komponen
         return <Component {...pageProps }
         />;

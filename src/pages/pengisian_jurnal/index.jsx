@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import { BASE_URL } from "@/components/layoutsAdmin/apiConfig";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 import { useCookies } from "react-cookie";
 import axios from "axios";
+import { useRouter } from "next/router";
 
 export default function UserProfile() {
+  const router = useRouter();
   const [cookies] = useCookies(["token"]);
   const [formData, setFormData] = useState({
     tanggal_pengisian: "",
@@ -27,6 +29,36 @@ export default function UserProfile() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    const token = cookies.token;
+    const now = new Date();
+    const hour = now.getHours();
+
+    if (!token) {
+      Swal.fire({
+        title: "Akses Ditolak!",
+        text: "Silakan login terlebih dahulu.",
+        icon: "warning",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#3b82f6",
+      }).then(() => {
+        router.push("/");
+      });
+      return;
+    }
+
+    if (hour < 8 || hour >= 15) {
+      Swal.fire({
+        title: "Waktu Tidak Diperbolehkan!",
+        text: "Halaman ini hanya bisa diakses antara pukul 08:00 - 15:00.",
+        icon: "error",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#f44336",
+      }).then(() => {
+        router.push("/");
+      });
+      return;
+    }
+
     const fetchData = async () => {
       try {
         const pembimbingResponse = await fetch(`${BASE_URL}/api/pembimbing`);
@@ -37,13 +69,9 @@ export default function UserProfile() {
         const perusahaanData = await perusahaanResponse.json();
         setPerusahaans(perusahaanData);
 
-        const token = cookies.token;
-        console.log("Token from cookies:", token);
-
         if (token) {
-          const payload = token.split('.')[1];
+          const payload = token.split(".")[1];
           const decodedPayload = JSON.parse(atob(payload));
-          console.log("Decoded Payload:", decodedPayload);
           setFormData((prevData) => ({
             ...prevData,
             id_siswa: decodedPayload.id,
@@ -72,7 +100,7 @@ export default function UserProfile() {
       }
     };
     fetchData();
-  }, [cookies.token]);
+  }, [cookies.token, router]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -80,8 +108,6 @@ export default function UserProfile() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Data before submission:", formData);
-  
     try {
       const response = await fetch(`${BASE_URL}/api/jurnal`, {
         method: "POST",
@@ -95,15 +121,12 @@ export default function UserProfile() {
           id_perusahaan: formData.id_perusahaan,
         }),
       });
-  
+
       if (!response.ok) {
         const errorResult = await response.json();
-        throw new Error(errorResult.message || "Failed to create journal entry");
+        throw new Error(errorResult.message || "Gagal mengisi jurnal");
       }
-  
-      const result = await response.json();
-      console.log("Journal entry created:", result);
-  
+
       setFormData({
         tanggal_pengisian: "",
         nama_pekerjaan: "",
@@ -120,28 +143,21 @@ export default function UserProfile() {
       });
 
       await Swal.fire({
-        title: 'Success!',
-        text: 'Pengisian jurnal harian telah berhasil.',
-        icon: 'success',
-        confirmButtonText: 'OK',
-        confirmButtonColor: '#3b82f6',
-        showCloseButton: false,
+        title: "Berhasil!",
+        text: "Pengisian jurnal harian telah berhasil.",
+        icon: "success",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#3b82f6",
       });
 
       window.location.reload();
-
     } catch (error) {
-      console.error("Error creating journal entry:", error);
+      console.error("Error:", error);
     }
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
   return (
     <>
@@ -154,47 +170,20 @@ export default function UserProfile() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="flex flex-col">
               <label className="text-gray-600 text-sm">Tanggal Pengisian</label>
-              <input
-                type="date"
-                name="tanggal_pengisian"
-                onChange={handleChange}
-                required
-                className="input w-full"
-              />
+              <input type="date" name="tanggal_pengisian" onChange={handleChange} required className="input w-full" />
             </div>
             <div className="flex flex-col">
               <label className="text-gray-600 text-sm">Nama Pekerjaan</label>
-              <input
-                type="text"
-                name="nama_pekerjaan"
-                onChange={handleChange}
-                required
-                className="input w-full"
-              />
+              <input type="text" name="nama_pekerjaan" onChange={handleChange} required className="input w-full" />
             </div>
             <div className="flex flex-col">
               <label className="text-gray-600 text-sm">Deskripsi Pekerjaan</label>
-              <input
-                type="text"
-                name="deskripsi_pekerjaan"
-                onChange={handleChange}
-                required
-                className="input w-full"
-              />
+              <input type="text" name="deskripsi_pekerjaan" onChange={handleChange} required className="input w-full" />
             </div>
-            <input
-              type="hidden"
-              name="id_siswa"
-              value={formData.id_siswa}
-            />
+            <input type="hidden" name="id_siswa" value={formData.id_siswa} />
             <div className="flex flex-col">
               <label className="text-gray-600 text-sm">Pilih Pembimbing</label>
-              <select
-                name="id_pembimbing"
-                onChange={handleChange}
-                required
-                className="input w-full"
-              >
+              <select name="id_pembimbing" onChange={handleChange} required className="input w-full">
                 <option value="">Select Pembimbing</option>
                 {pembimbings.map((p) => (
                   <option key={p.id} value={p.id}>{p.nama_pembimbing}</option>
@@ -203,39 +192,19 @@ export default function UserProfile() {
             </div>
             <div className="flex flex-col">
               <label className="text-gray-600 text-sm">Pilih Perusahaan</label>
-              <select
-                name="id_perusahaan"
-                onChange={handleChange}
-                required
-                className="input w-full"
-              >
+              <select name="id_perusahaan" onChange={handleChange} required className="input w-full">
                 <option value="">Select Perusahaan</option>
                 {perusahaans.map((p) => (
                   <option key={p.id} value={p.id}>{p.nama_perusahaan}</option>
                 ))}
               </select>
             </div>
-            <button
-              type="submit"
-              className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-200"
-            >
+            <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-200">
               Submit
             </button>
           </form>
         </div>
       </div>
-      <style jsx>{`
-        .input {
-          border: 1px solid #d1d5db;
-          padding: 0.5rem;
-          border-radius: 0.5rem;
-          outline: none;
-          transition: border 0.2s;
-        }
-        .input:focus {
-          border-color: #3b82f6;
-        }
-      `}</style>
     </>
   );
 }

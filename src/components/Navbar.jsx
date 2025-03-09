@@ -156,22 +156,32 @@ export default function Navbar() {
                   ? "font-bold text-white underline"
                   : ""
               } px-4 py-2 text-sm font-bold bg-transparent rounded-lg hover:text-white focus:underline underline-offset-8 focus:text-white text-center lg:text-left`}
-              onClick={
-                !isLoggedIn
-                  ? (e) => {
-                      e.preventDefault();
-                      Swal.fire({
-                        title: "Akses Ditolak",
-                        text: "Anda harus login untuk mengakses Pengisian Jurnal.",
-                        icon: "warning",
-                        confirmButtonText: "OK",
-                        showCloseButton: true,
-                        closeButtonHtml:
-                          '<span aria-label="close">&times;</span>',
-                      });
-                    }
-                  : undefined
-              }
+              onClick={(e) => {
+                const now = new Date();
+                const currentHour = now.getHours();
+
+                if (!isLoggedIn) {
+                  e.preventDefault();
+                  Swal.fire({
+                    title: "Akses Ditolak",
+                    text: "Anda harus login untuk mengakses Pengisian Jurnal.",
+                    icon: "warning",
+                    confirmButtonText: "OK",
+                    showCloseButton: true,
+                    closeButtonHtml: '<span aria-label="close">&times;</span>',
+                  });
+                } else if (currentHour < 8 || currentHour >= 15) {
+                  e.preventDefault();
+                  Swal.fire({
+                    title: "Akses Ditutup",
+                    text: "Menu Pengisian Jurnal hanya dapat diakses dari pukul 08:00 hingga 15:00.",
+                    icon: "warning",
+                    confirmButtonText: "OK",
+                    showCloseButton: true,
+                    closeButtonHtml: '<span aria-label="close">&times;</span>',
+                  });
+                }
+              }}
             >
               PENGISIAN JURNAL
             </Link>

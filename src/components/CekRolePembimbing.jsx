@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import Swal from "sweetalert2";
 import { BASE_URL } from "./layoutsAdmin/apiConfig";
 
-const CekRole = () => {
+const CekRolePembimbing = () => {
   const [cookies] = useCookies(["token"]);
   const [role, setRole] = useState("");
   const [loading, setLoading] = useState(true);
@@ -18,52 +18,42 @@ const CekRole = () => {
       if (!token) {
         Swal.fire({
           title: "Session Expired",
-          text: "Silakan login kembali.",
+          text: "Silakan login kembali sebagai pembimbing.",
           icon: "warning",
           confirmButtonText: "OK",
-          confirmButtonColor: "#f59e0b", // Warna kuning (opsional)
+          confirmButtonColor: "#dc2626", // Warna merah
         }).then(() => {
-          router.push("/auth/login");
+          router.push("/auth_pembimbing/login");
         });
         return;
       }
 
       const config = {
         headers: {
-          Authorization: `${token}`,
+          Authorization: `Bearer ${token}`,
         },
       };
 
-      // Tentukan endpoint berdasarkan URL saat ini
-      const endpoint = router.pathname === "/pelanggan/invoice"
-        ? `${BASE_URL}/api/authpelanggan/cekToken/`
-        : `${BASE_URL}/api/auth/cekToken/`;
+      const endpoint = `${BASE_URL}/api/authpembimbing/me`;
 
       try {
         const response = await axios.get(endpoint, config);
 
-        if (response.status === 200) {
-          setRole(response.data.id);
+        if (response.status === 200 && response.data.data) {
+          setRole(response.data.data.id);
         } else {
-          console.error("Unexpected response status:", response.status);
-          Swal.fire({
-            title: "Session Invalid",
-            text: "Silakan login kembali.",
-            icon: "error",
-            confirmButtonText: "OK",
-          }).then(() => {
-            router.push("/auth/login");
-          });
+          throw new Error("Invalid session");
         }
       } catch (error) {
         console.error("Error checking token:", error);
         Swal.fire({
           title: "Session Expired",
-          text: "Silakan login kembali.",
+          text: "Silakan login kembali sebagai pembimbing.",
           icon: "error",
           confirmButtonText: "OK",
+          confirmButtonColor: "#dc2626", // Warna merah
         }).then(() => {
-          router.push("/auth/login");
+          router.push("/auth_pembimbing/login");
         });
       } finally {
         setLoading(false);
@@ -80,4 +70,4 @@ const CekRole = () => {
   return role;
 };
 
-export default CekRole;
+export default CekRolePembimbing;

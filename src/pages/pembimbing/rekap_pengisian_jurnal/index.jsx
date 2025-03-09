@@ -19,18 +19,22 @@ const Rekap_pengisian_jurnal = ({ isLoggedIn }) => {
     try {
       const cookies = parseCookies();
       const token = cookies.token;
-      if (!token) throw new Error("Token tidak tersedia, silakan login kembali.");
+      if (!token)
+        throw new Error("Token tidak tersedia, silakan login kembali.");
       const decodedToken = jwtDecode(token);
       const id_pembimbing = decodedToken.id;
-      if (!id_pembimbing) throw new Error("ID Pembimbing tidak ditemukan dalam token.");
-      
+      if (!id_pembimbing)
+        throw new Error("ID Pembimbing tidak ditemukan dalam token.");
+
       const response = await axios.get(`${BASE_URL}/api/jurnal`, {
         params: { id_pembimbing },
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
-      
-      let data = Array.isArray(response.data) ? response.data : response.data.data;
-      data = data.filter(item => item.id_pembimbing === id_pembimbing);
+
+      let data = Array.isArray(response.data)
+        ? response.data
+        : response.data.data;
+      data = data.filter((item) => item.id_pembimbing === id_pembimbing);
       setJurnal(data);
     } catch (error) {
       setError(error.response ? error.response.data : error.message);
@@ -43,9 +47,16 @@ const Rekap_pengisian_jurnal = ({ isLoggedIn }) => {
     fetchData();
   }, []);
 
-  const filteredJurnal = jurnal.filter(item => {
-    const matchesSearch = searchTerm ? item.siswa?.nama_lengkap?.toLowerCase().includes(searchTerm.toLowerCase()) : true;
-    const matchesMonth = selectedMonth ? new Date(item.tanggal_pengisian).getMonth() + 1 === parseInt(selectedMonth) : true;
+  const filteredJurnal = jurnal.filter((item) => {
+    const matchesSearch = searchTerm
+      ? item.siswa?.nama_lengkap
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase())
+      : true;
+    const matchesMonth = selectedMonth
+      ? new Date(item.tanggal_pengisian).getMonth() + 1 ===
+        parseInt(selectedMonth)
+      : true;
     return matchesSearch && matchesMonth;
   });
 
@@ -67,12 +78,14 @@ const Rekap_pengisian_jurnal = ({ isLoggedIn }) => {
           >
             <option value="">Pilih Bulan</option>
             {[...Array(12)].map((_, index) => (
-              <option key={index} value={index + 1}>{new Date(0, index).toLocaleString('id-ID', { month: 'long' })}</option>
+              <option key={index} value={index + 1}>
+                {new Date(0, index).toLocaleString("id-ID", { month: "long" })}
+              </option>
             ))}
           </select>
         </div>
       </div>
-      
+
       <div className="bg-white rounded-xl shadow-md p-4">
         <div className="overflow-x-auto lg:overflow-x-hidden">
           <table className="min-w-full text-sm font-light text-left">
@@ -82,21 +95,47 @@ const Rekap_pengisian_jurnal = ({ isLoggedIn }) => {
                 <th className="px-6 py-4">Nama Pekerjaan</th>
                 <th className="px-6 py-4">Deskripsi Pekerjaan</th>
                 <th className="px-6 py-4">Nama Siswa</th>
+                <th className="px-6 py-4">Kelas</th>
+                <th className="px-6 py-4">Jurusan</th>
               </tr>
             </thead>
             <tbody>
               {filteredJurnal.length > 0 ? (
                 filteredJurnal.map((item) => (
                   <tr className="border-b" key={item.id}>
-                    <td className="px-6 py-4">{item.tanggal_pengisian || "-"}</td>
+                    <td className="px-6 py-4">
+                      {item.tanggal_pengisian
+                        ? new Date(item.tanggal_pengisian)
+                            .getDate()
+                            .toString()
+                            .padStart(2, "0")
+                        : "-"}
+                    </td>
+
                     <td className="px-6 py-4">{item.nama_pekerjaan || "-"}</td>
-                    <td className="px-6 py-4">{item.deskripsi_pekerjaan || "-"}</td>
-                    <td className="px-6 py-4">{item.siswa ? item.siswa.nama_lengkap : "-"}</td>
+                    <td className="px-6 py-4">
+                      {item.deskripsi_pekerjaan || "-"}
+                    </td>
+                    <td className="px-6 py-4">
+                      {item.siswa ? item.siswa.nama_lengkap : "-"}
+                    </td>
+                    <td className="px-6 py-4">
+                      {item.siswa?.kelasInfo
+                        ? item.siswa.kelasInfo.nama_kelas
+                        : "-"}
+                    </td>
+                    <td className="px-6 py-4">
+                      {item.siswa?.jurusanInfo
+                        ? item.siswa.jurusanInfo.nama_jurusan
+                        : "-"}
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={4} className="text-center py-4">Data tidak tersedia</td>
+                  <td colSpan={6} className="text-center py-4">
+                    Data tidak tersedia
+                  </td>
                 </tr>
               )}
             </tbody>

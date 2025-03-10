@@ -1,5 +1,6 @@
 import AdminLayout from "../layouts";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import * as XLSX from "xlsx";
 import axios from "axios";
 import Link from "next/link";
 import Head from "next/head";
@@ -25,6 +26,8 @@ export default function Siswa() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [itemIdToDelete, setItemIdToDelete] = useState(null);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const fileInputRef = useRef(null);
+  const [file, setFile] = useState(null);
   // add data
   const [formData, setFormData] = useState({
     nama_lengkap: "",
@@ -59,7 +62,9 @@ export default function Siswa() {
     try {
       const response = await axios.get(`${BASE_URL}/api/siswa`);
       // Pastikan response.data adalah array
-      const data = Array.isArray(response.data) ? response.data : response.data.data;
+      const data = Array.isArray(response.data)
+        ? response.data
+        : response.data.data;
       setAllSiswa(data);
 
       const filteredData = data.filter((item) =>
@@ -80,6 +85,58 @@ export default function Siswa() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      handleUpload(selectedFile); // Langsung upload setelah pilih file
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!file) {
+      alert("Pilih file Excel terlebih dahulu!");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.readAsBinaryString(file);
+
+    reader.onload = async (e) => {
+      const data = e.target.result;
+      const workbook = XLSX.read(data, { type: "binary" });
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      const rawData = XLSX.utils.sheet_to_json(sheet);
+
+      // Konversi data agar sesuai dengan format backend
+      const formattedData = rawData.map((row) => ({
+        nama_siswa: row.nama || row.Nama || "",
+        email: row.email || row.Email || "",
+        password: row.password || row.Password || "",
+      }));
+
+      console.log("Data yang dikirim ke backend:", formattedData); // Debugging
+
+      try {
+        const response = await axios.post(
+          "/api/siswa/excelsiswa",
+          formattedData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        alert(response.data.message);
+      } catch (error) {
+        console.error("Error mengirim data:", error);
+        alert("Gagal mengunggah data.");
+      }
+    };
   };
 
   // kondisi search
@@ -200,9 +257,12 @@ export default function Siswa() {
         password: formData.password,
       };
 
-      console.log('Data yang dikirim:', formDataToSend);
+      console.log("Data yang dikirim:", formDataToSend);
 
-      const response = await axios.post(`${BASE_URL}/api/siswa`, formDataToSend);
+      const response = await axios.post(
+        `${BASE_URL}/api/siswa`,
+        formDataToSend
+      );
 
       if (response.status === 200 || response.status === 201) {
         showToastMessage("Data berhasil ditambahkan!");
@@ -258,11 +318,11 @@ export default function Siswa() {
         dataToSend,
         {
           headers: {
-            'Content-Type': 'application/json',
-          }
+            "Content-Type": "application/json",
+          },
         }
       );
-      
+
       if (response.status === 200 || response.status === 201) {
         showToastMessage("Data berhasil diupdate!");
         setShowUpdateModal(false);
@@ -271,8 +331,8 @@ export default function Siswa() {
     } catch (error) {
       console.error("Error updating data:", error);
       toast.error(
-        error.response?.data?.message || 
-        "Gagal mengupdate data. Silakan coba lagi."
+        error.response?.data?.message ||
+          "Gagal mengupdate data. Silakan coba lagi."
       );
     }
   };
@@ -304,20 +364,43 @@ export default function Siswa() {
         <ToastContainer />
 
         <div className="flex items-center justify-between mb-4 lg:-mt-48 md:-mt-48">
-          <input
-            type="text"
-            placeholder="Cari Siswa..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-48 md:w-56 lg:w-72 rounded-xl border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-          />
-          <button
-            onClick={toggleModal}
-            className="flex items-center gap-1 px-4 py-2 text-white rounded-md shadow-sm bg-amber-400 hover:bg-amber-500"
-          >
-            <i className="fa-solid fa-plus"></i>
-            Siswa
-          </button>
+          <div>
+            <input
+              type="text"
+              placeholder="Cari Siswa..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-48 md:w-56 lg:w-72 rounded-xl border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+            />
+          </div>
+          <div className="flex ">
+            <button
+              onClick={toggleModal}
+              className="flex items-center px-4 mx-4 py-2 text-white rounded-md shadow-sm bg-amber-400 hover:bg-amber-500"
+            >
+              <i className="fa-solid fa-plus"></i>
+              Siswa
+            </button>
+
+            {/* Input file disembunyikan */}
+            <input
+              type="file"
+              accept=".xlsx, .xls"
+              ref={fileInputRef}
+              style={{ display: "none" }}
+              onChange={handleFileChange}
+            />
+
+            {/* Button untuk membuka input file */}
+            <button
+              type="button"
+              onClick={() => fileInputRef.current.click()} // Klik otomatis input file
+              className="flex items-center px-4 py-2 text-white rounded-md shadow-sm bg-amber-400 hover:bg-amber-500"
+            >
+              <i className="fa-solid fa-plus mr-2"></i>
+              Tambah Lewat Excel
+            </button>
+          </div>
         </div>
 
         <div className="flex flex-col bg-white rounded-xl">
@@ -329,17 +412,30 @@ export default function Siswa() {
                   <table className="min-w-full text-sm font-light text-left">
                     <thead className="font-medium border-b dark:border-neutral-500">
                       <tr>
-                        <th scope="col" className="px-6 py-4 lg:w-[20%]">Nama Lengkap</th>
-                        <th scope="col" className="px-6 py-4 lg:w-[10%]">Kelas</th>
-                        <th scope="col" className="px-6 py-4 lg:w-[15%]">Jurusan</th>
-                        <th scope="col" className="px-6 py-4 lg:w-[20%]">Email</th>
-                        <th scope="col" className="px-6 py-4 lg:w-[15%]">Action</th>
+                        <th scope="col" className="px-6 py-4 lg:w-[20%]">
+                          Nama Lengkap
+                        </th>
+                        <th scope="col" className="px-6 py-4 lg:w-[10%]">
+                          Kelas
+                        </th>
+                        <th scope="col" className="px-6 py-4 lg:w-[15%]">
+                          Jurusan
+                        </th>
+                        <th scope="col" className="px-6 py-4 lg:w-[20%]">
+                          Email
+                        </th>
+                        <th scope="col" className="px-6 py-4 lg:w-[15%]">
+                          Action
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
                       {siswa && siswa.length > 0 ? (
                         siswa.map((item) => (
-                          <tr className="border-b dark:border-neutral-500" key={item.id}>
+                          <tr
+                            className="border-b dark:border-neutral-500"
+                            key={item.id}
+                          >
                             <td className="px-6 py-4 whitespace-nowrap">
                               {item.nama_lengkap || "Nama tidak tersedia"}
                             </td>
@@ -392,11 +488,16 @@ export default function Siswa() {
                 <div className="grid grid-cols-1 gap-4 md:hidden">
                   {siswa && siswa.length > 0 ? (
                     siswa.map((item) => (
-                      <div key={item.id} className="p-4 bg-white rounded-lg shadow">
+                      <div
+                        key={item.id}
+                        className="p-4 bg-white rounded-lg shadow"
+                      >
                         <div className="space-y-2">
                           <div className="flex justify-between">
                             <span className="font-bold">Nama:</span>
-                            <span>{item.nama_lengkap || "Nama tidak tersedia"}</span>
+                            <span>
+                              {item.nama_lengkap || "Nama tidak tersedia"}
+                            </span>
                           </div>
                           <div className="flex justify-between">
                             <span className="font-bold">Kelas:</span>
@@ -411,7 +512,7 @@ export default function Siswa() {
                             <span>{item.email || "Email tidak tersedia"}</span>
                           </div>
                           <div className="flex justify-center gap-2 mt-4">
-                            <button 
+                            <button
                               onClick={() => handleEdit(item)}
                               className="px-4 py-2 text-white rounded-full bg-amber-400 hover:bg-amber-500"
                             >
@@ -431,38 +532,45 @@ export default function Siswa() {
                       </div>
                     ))
                   ) : (
-                    <div className="p-4 text-center">
-                      Data tidak tersedia
-                    </div>
+                    <div className="p-4 text-center">Data tidak tersedia</div>
                   )}
                 </div>
 
                 {/* Pagination */}
                 <div className="flex justify-center gap-2 my-4">
                   <button
-                    onClick={() => setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))}
+                    onClick={() =>
+                      setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))
+                    }
                     disabled={currentPage === 1}
                     className="px-3 py-1 text-sm bg-gray-200 rounded-md hover:bg-gray-400"
                   >
                     Prev
                   </button>
                   <div className="flex gap-1">
-                    {Array.from({ length: Math.min(totalPages, 5) }, (_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setCurrentPage(firstPage + index)}
-                        className={`mx-1 px-3 py-1 text-sm rounded-md ${
-                          currentPage === firstPage + index
-                            ? "bg-amber-400 hover:bg-amber-500 text-white"
-                            : "bg-gray-200 hover:bg-gray-400"
-                        }`}
-                      >
-                        {firstPage + index}
-                      </button>
-                    ))}
+                    {Array.from(
+                      { length: Math.min(totalPages, 5) },
+                      (_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setCurrentPage(firstPage + index)}
+                          className={`mx-1 px-3 py-1 text-sm rounded-md ${
+                            currentPage === firstPage + index
+                              ? "bg-amber-400 hover:bg-amber-500 text-white"
+                              : "bg-gray-200 hover:bg-gray-400"
+                          }`}
+                        >
+                          {firstPage + index}
+                        </button>
+                      )
+                    )}
                   </div>
                   <button
-                    onClick={() => setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages))}
+                    onClick={() =>
+                      setCurrentPage((prevPage) =>
+                        Math.min(prevPage + 1, totalPages)
+                      )
+                    }
                     disabled={currentPage === totalPages}
                     className="px-3 py-1 text-sm bg-gray-200 rounded-md hover:bg-gray-400"
                   >
@@ -696,7 +804,10 @@ export default function Siswa() {
                     name="nama"
                     value={updateData.nama_lengkap}
                     onChange={(e) =>
-                      setUpdateData({ ...updateData, nama_lengkap: e.target.value })
+                      setUpdateData({
+                        ...updateData,
+                        nama_lengkap: e.target.value,
+                      })
                     }
                     className="flex items-center w-full h-10 pl-3 mt-2 mb-3 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
                     placeholder="Nama"
@@ -714,7 +825,10 @@ export default function Siswa() {
                       name="id_kelas"
                       value={updateData.id_kelas}
                       onChange={(e) =>
-                        setUpdateData({ ...updateData, id_kelas: e.target.value })
+                        setUpdateData({
+                          ...updateData,
+                          id_kelas: e.target.value,
+                        })
                       }
                       className="flex items-center w-full h-10 pl-3 mt-2 mb-3 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
                     >
@@ -739,7 +853,10 @@ export default function Siswa() {
                       name="id_jurusan"
                       value={updateData.id_jurusan}
                       onChange={(e) =>
-                        setUpdateData({ ...updateData, id_jurusan: e.target.value })
+                        setUpdateData({
+                          ...updateData,
+                          id_jurusan: e.target.value,
+                        })
                       }
                       className="flex items-center w-full h-10 pl-3 mt-2 mb-3 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
                     >
@@ -842,4 +959,4 @@ export default function Siswa() {
       </AdminLayout>
     </>
   );
-};
+}

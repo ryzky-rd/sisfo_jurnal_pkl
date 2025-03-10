@@ -14,7 +14,7 @@ function Kontak_Kami() {
       duration: 1000,
       once: true,
     });
-    
+
     const isLaptop = window.innerWidth >= 1024;
     if (isLaptop) {
       setIsOpenWcu(true);
@@ -38,7 +38,7 @@ function Kontak_Kami() {
 
   return (
     <div className="grid text-start px-auto mt-12">
-      <div 
+      <div
         className="grid px-5 py-8 text-start lg:px-10"
         data-aos="fade-right"
         data-aos-delay="200"
@@ -56,12 +56,19 @@ function Kontak_Kami() {
           style={getDropdownStyle(isOpenProfil, profilContentRef)}
         >
           <p className="my-6">
-            Gmt Soft Development adalah perusahaan yang telah berpengalaman
-            sejak 2018 dalam menyediakan layanan pembuatan website profesional.
-            Kami berkomitmen untuk memberikan solusi digital yang berkualitas
-            tinggi, dengan fokus pada kebutuhan klien. Tim kami terdiri dari
-            para ahli di bidang desain, pengembangan, dan pemasaran digital,
-            siap membantu bisnis Anda tumbuh dan berkembang di era digital.
+            SMKN 1 KOTA CIREBON adalah sekolah menengah kejuruan yang
+            berkomitmen untuk mencetak lulusan berkualitas, siap kerja, dan
+            berdaya saing tinggi di dunia industri maupun wirausaha. Dengan
+            pengalaman bertahun-tahun dalam dunia pendidikan, kami terus
+            berinovasi dalam memberikan pembelajaran berbasis kompetensi yang
+            sesuai dengan kebutuhan industri. Sebagai salah satu SMK unggulan di
+            Kota Cirebon, kami memiliki berbagai jurusan yang relevan dengan
+            perkembangan zaman, didukung oleh tenaga pendidik profesional, serta
+            fasilitas yang lengkap untuk menunjang proses belajar mengajar. Kami
+            berkomitmen untuk terus meningkatkan kualitas pendidikan dan
+            mencetak lulusan yang siap menghadapi tantangan global dengan
+            keterampilan, etika kerja, dan kreativitas yang tinggi. SMKN 1 Kota
+            Cirebon, Tempat Membangun Masa Depan! 🚀🎓
           </p>
         </div>
       </div>

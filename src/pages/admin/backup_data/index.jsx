@@ -8,7 +8,7 @@ import { parseCookies } from "nookies";
 import { useRouter } from "next/router";
 import { BASE_URL } from '../../../components/layoutsAdmin/apiConfig';
 
-const BackupData = ({ isLoggedIn }) => {
+export default function BackupData() {
   const router = useRouter();
   const [backupHistory, setBackupHistory] = useState([]);
 
@@ -108,10 +108,6 @@ const BackupData = ({ isLoggedIn }) => {
     return () => clearInterval(intervalId); // Bersihkan interval ketika komponen dibongkar
   }, [isLoggedIn]);
 
-  if (!isLoggedIn) {
-    return <p>Loading...</p>;
-  }
-
   return (
     <>
       <Head>
@@ -183,17 +179,3 @@ const BackupData = ({ isLoggedIn }) => {
   );
 };
 
-export async function getServerSideProps(context) {
-  // Mendapatkan cookies dari konteks
-  const cookies = parseCookies(context);
-
-  // Mengecek apakah token JWT ada di cookies
-  const isLoggedIn = !!cookies.token;
-
-  // Mengembalikan props untuk komponen Dashboard
-  return {
-    props: { isLoggedIn },
-  };
-}
-
-export default BackupData;

@@ -6,7 +6,7 @@ import Head from "next/head";
 import { parseCookies } from "nookies";
 import { useRouter } from "next/router";
 
-export default function Dashboard({ isLoggedIn }) {
+export default function Dashboard() {
   const router = useRouter();
 
   // Jika pengguna belum login, arahkan kembali ke halaman login
@@ -61,16 +61,4 @@ export default function Dashboard({ isLoggedIn }) {
     </>
   );
 }
-// middleware
-export async function getServerSideProps(context) {
-  // Mendapatkan cookies dari konteks
-  const cookies = parseCookies(context);
 
-  // Mengecek apakah token JWT ada di cookies
-  const isLoggedIn = !!cookies.token;
-
-  // Mengembalikan props untuk komponen Dashboard
-  return {
-    props: { isLoggedIn },
-  };
-}

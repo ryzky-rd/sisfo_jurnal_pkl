@@ -16,7 +16,7 @@ export default function Sidebar() {
   const [cookies, setCookie] = useCookies(["token"]);
 
   // akses berdasarkan role
-  const role = CekRole();
+  // const role = CekRole();
 
   // SECTION Fungsi untuk menghapus cookie berdasarkan namanya
   function deleteCookie(name) {

@@ -10,7 +10,7 @@ import { parseCookies } from "nookies";
 import { useRouter } from "next/router";
 import { BASE_URL } from "../../../components/layoutsAdmin/apiConfig";
 
-const Perusahaan = ({ isLoggedIn }) => {
+export default function Perusahaan() {
   const [allPerusahaan, setAllPerusahaan] = useState([]);
   const router = useRouter();
   const [perusahaan, setPerusahaan] = useState([]);
@@ -516,13 +516,3 @@ const Perusahaan = ({ isLoggedIn }) => {
   );
 };
 
-export async function getServerSideProps(context) {
-  const cookies = parseCookies(context);
-  const isLoggedIn = !!cookies.token;
-
-  return {
-    props: { isLoggedIn },
-  };
-}
-
-export default Perusahaan;

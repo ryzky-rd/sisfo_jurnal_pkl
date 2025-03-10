@@ -9,7 +9,7 @@ import { auto } from "@popperjs/core";
 import { parseCookies } from "nookies";
 import { useRouter } from "next/router";
 import { BASE_URL } from "../../../components/layoutsAdmin/apiConfig";
-const Pembimbing = ({ isLoggedIn }) => {
+export default function Pembimbing() {
   const [allPembimbing, setAllPembimbing] = useState([]); // State untuk menyimpan semua data pembimbing
   const router = useRouter();
   const [pembimbing, setPembimbing] = useState([]);
@@ -237,14 +237,6 @@ const Pembimbing = ({ isLoggedIn }) => {
     }
   };
 
-  // Jika pengguna belum login, arahkan kembali ke halaman login
-  if (!isLoggedIn) {
-    if (typeof window !== "undefined") {
-      // Cek apakah kode sedang berjalan di sisi klien
-      router.push("/auth/login"); // Mengarahkan pengguna kembali ke halaman login
-    }
-    return <p>Loading...</p>; // or display loading indicator
-  }
   return (
     <>
       <Head>
@@ -804,18 +796,4 @@ const Pembimbing = ({ isLoggedIn }) => {
   );
 };
 
-// middleware
-export async function getServerSideProps(context) {
-  // Mendapatkan cookies dari konteks
-  const cookies = parseCookies(context);
 
-  // Mengecek apakah token JWT ada di cookies
-  const isLoggedIn = !!cookies.token;
-
-  // Mengembalikan props untuk komponen Dashboard
-  return {
-    props: { isLoggedIn },
-  };
-}
-
-export default Pembimbing;

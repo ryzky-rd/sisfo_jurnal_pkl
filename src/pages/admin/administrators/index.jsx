@@ -10,7 +10,7 @@ import { parseCookies } from "nookies";
 import { useRouter } from "next/router";
 import { BASE_URL } from "../../../components/layoutsAdmin/apiConfig";
 
-const Administrators = ({ isLoggedIn }) => {
+export default function Administrators() {
   const router = useRouter();
   const [administrators, setAdministrators] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -226,15 +226,6 @@ const Administrators = ({ isLoggedIn }) => {
       console.error("Error:", error);
     }
   };
-
-  // Jika pengguna belum login, arahkan kembali ke halaman login
-  if (!isLoggedIn) {
-    if (typeof window !== "undefined") {
-      // Cek apakah kode sedang berjalan di sisi klien
-      router.push("/auth/login"); // Mengarahkan pengguna kembali ke halaman login
-    }
-    return <p>Loading...</p>; // or display loading indicator
-  }
   return (
     <>
       <Head>
@@ -801,19 +792,3 @@ const Administrators = ({ isLoggedIn }) => {
     </>
   );
 };
-
-// middleware
-export async function getServerSideProps(context) {
-  // Mendapatkan cookies dari konteks
-  const cookies = parseCookies(context);
-
-  // Mengecek apakah token JWT ada di cookies
-  const isLoggedIn = !!cookies.token;
-
-  // Mengembalikan props untuk komponen Dashboard
-  return {
-    props: { isLoggedIn },
-  };
-}
-
-export default Administrators;

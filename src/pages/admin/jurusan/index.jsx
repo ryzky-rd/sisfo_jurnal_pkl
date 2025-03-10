@@ -10,7 +10,7 @@ import { parseCookies } from "nookies";
 import { useRouter } from "next/router";
 import { BASE_URL } from "../../../components/layoutsAdmin/apiConfig";
 
-const Jurusan = ({ isLoggedIn }) => {
+export default function Jurusan() {
   const [allJurusan, setAllJurusan] = useState([]);
   const router = useRouter();
   const [jurusan, setJurusan] = useState([]);
@@ -430,14 +430,3 @@ const Jurusan = ({ isLoggedIn }) => {
     </>
   );
 };
-
-export async function getServerSideProps(context) {
-  const cookies = parseCookies(context);
-  const isLoggedIn = !!cookies.token;
-
-  return {
-    props: { isLoggedIn },
-  };
-}
-
-export default Jurusan;

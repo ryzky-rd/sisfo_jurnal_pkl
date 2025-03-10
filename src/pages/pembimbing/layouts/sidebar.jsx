@@ -30,30 +30,11 @@ export default function Sidebar() {
           Authorization: `${token}`,
         },
       };
-      await axios.post(`${BASE_URL}/api/auth/logout`, null, config);
+      await axios.post(`${BASE_URL}/api/authpembimbing/logout`, null, config);
       deleteCookie("token");
       router.push("/auth_pembimbing/login");
     } catch (error) {}
   };
-  const [dropdownOpenPembayaran, setDropdownOpenPembayaran] = useState(
-      router.pathname.indexOf("/admin/siswa") !== -1 ||
-      router.pathname.indexOf("/admin/guru_pembimbing") !== -1 ||
-      router.pathname.indexOf("/admin/administrators") !== -1
-  );
-
-  useEffect(() => {
-    setDropdownOpenPembayaran(
-      router.pathname.indexOf("/admin/guru_pembimbing") !== -1 ||
-      router.pathname.indexOf("/admin/siswa") !== -1 ||
-      router.pathname.indexOf("/admin/administrators") !== -1
-    );
-  }, [router.pathname]);
-
-  const [dropdownOpenManajemen, setDropdownOpenManajemen] = useState(
-    router.pathname.indexOf("/admin/jurusan") !== -1 ||
-    router.pathname.indexOf("/admin/kelas") !== -1 ||
-    router.pathname.indexOf("/admin/perusahaan") !== -1
-  );
 
   return (
     <>

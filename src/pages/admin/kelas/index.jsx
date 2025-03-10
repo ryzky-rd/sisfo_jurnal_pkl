@@ -10,7 +10,7 @@ import { parseCookies } from "nookies";
 import { useRouter } from "next/router";
 import { BASE_URL } from "../../../components/layoutsAdmin/apiConfig";
 
-const Kelas = ({ isLoggedIn }) => {
+export default function Kelas() {
   const [allKelas, setAllKelas] = useState([]);
   const router = useRouter();
   const [kelas, setKelas] = useState([]);
@@ -383,14 +383,3 @@ const Kelas = ({ isLoggedIn }) => {
     </>
   );
 };
-
-export async function getServerSideProps(context) {
-  const cookies = parseCookies(context);
-  const isLoggedIn = !!cookies.token;
-
-  return {
-    props: { isLoggedIn },
-  };
-}
-
-export default Kelas;

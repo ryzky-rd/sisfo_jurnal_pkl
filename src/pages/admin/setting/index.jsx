@@ -158,10 +158,6 @@ export default function Edit() {
     return <p>Loading...</p>;
   }
 
-  if (error) {
-    return <p>Error: {error.message}</p>;
-  }
-
   return (
     <AdminLayout>
       <Head>
@@ -177,6 +173,11 @@ export default function Edit() {
               </div>
             </Link> */}
           </div>
+          {error && (
+            <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+              {error.message}
+            </div>
+          )}
           <form className="py-6 bg-white px-9" onSubmit={handleSubmit}>
             <div className="mb-6">
               <label className="mb-5 block text-base font-semibold text-[#07074D]">

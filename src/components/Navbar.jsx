@@ -211,12 +211,12 @@ export default function Navbar() {
                   >
                     LOGIN
                   </Link>
-                  <Link
+                  {/* <Link
                     href="/auth_user/register"
                     className="block px-4 py-2 text-sm font-bold text-white hover:bg-gray-700 text-center"
                   >
                     REGISTER
-                  </Link>
+                  </Link> */}
                 </>
               )}
             </div>
@@ -262,12 +262,12 @@ export default function Navbar() {
                       >
                         Login
                       </Link>
-                      <Link
+                      {/* <Link
                         href="/auth_user/register"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       >
                         Register
-                      </Link>
+                      </Link> */}
                     </>
                   )}
                 </div>

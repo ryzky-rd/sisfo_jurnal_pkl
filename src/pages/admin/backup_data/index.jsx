@@ -72,13 +72,6 @@ export default function BackupData() {
   };
 
   useEffect(() => {
-    if (!isLoggedIn) {
-      if (typeof window !== "undefined") {
-        router.push("/auth/login");
-      }
-      return;
-    }
-
     // Memuat sejarah backup dari localStorage saat komponen dimuat
     const savedHistory =
       JSON.parse(localStorage.getItem("backupHistory")) || [];
@@ -106,7 +99,7 @@ export default function BackupData() {
     const intervalId = setInterval(checkBackupInterval, 86400000); // 86400000ms = 1 hari
 
     return () => clearInterval(intervalId); // Bersihkan interval ketika komponen dibongkar
-  }, [isLoggedIn]);
+  });
 
   return (
     <>

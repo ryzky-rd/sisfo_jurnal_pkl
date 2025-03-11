@@ -127,7 +127,7 @@ export default function Sidebar() {
                         : "text-blueGray-300")
                     }
                   ></i>{" "}
-                  Rekap Absen Siswa
+                  Rekap Absen Perbulan
                 </Link>
               </li>
               <li className="items-center">

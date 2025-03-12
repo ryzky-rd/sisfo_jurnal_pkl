@@ -6,7 +6,7 @@ export default function Hero() {
     <section className="relative -mt-5 bg-transparent">
       <div className="flex flex-col w-full px-auto lg:px-28 md:px-28 lg:flex-row lg:gap-12 py-24 bg-gray-100  lg:py-36 lg:min-h-screen">
         <div className="relative text-black flex flex-col max-w-3xl px-auto lg:text-left lg:items-start lg:max-w-none lg:mx-0 lg:flex-1 lg:w-1/">
-          <h1 className="text-3xl text-center sm:mx-auto md:mx-28 font-bold leading-tight lg:text-5xl">
+          <h1 className="text-3xl text-center mx-auto font-bold leading-tight lg:text-4xl">
             PENDATAAN JURNAL PKL SMKN 1 KOTA CIREBON
           </h1>
           <h1 className="text-center md:mx-24 sm:mx-auto px-auto mt-8 mb-4 text-md leading-tight">

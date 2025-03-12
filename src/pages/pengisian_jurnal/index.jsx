@@ -61,36 +61,88 @@ export default function UserProfile() {
 
     const fetchData = async () => {
       try {
+        // Dekode token untuk mendapatkan ID pengguna yang sedang login
+        const payload = token.split(".")[1];
+        const decodedPayload = JSON.parse(atob(payload));
+        const userId = decodedPayload.id;
+        
+        // Set ID siswa ke state
+        setFormData((prevData) => ({
+          ...prevData,
+          id_siswa: userId,
+        }));
+
+        // Ambil data pembimbing
         const pembimbingResponse = await fetch(`${BASE_URL}/api/pembimbing`);
+        if (!pembimbingResponse.ok) {
+          throw new Error("Gagal mengambil data pembimbing");
+        }
         const pembimbingData = await pembimbingResponse.json();
         setPembimbings(pembimbingData.data);
 
+        // Ambil data perusahaan
         const perusahaanResponse = await fetch(`${BASE_URL}/api/perusahaan`);
+        if (!perusahaanResponse.ok) {
+          throw new Error("Gagal mengambil data perusahaan");
+        }
         const perusahaanData = await perusahaanResponse.json();
         setPerusahaans(perusahaanData);
 
-        if (token) {
-          const payload = token.split(".")[1];
-          const decodedPayload = JSON.parse(atob(payload));
-          setFormData((prevData) => ({
-            ...prevData,
-            id_siswa: decodedPayload.id,
-          }));
+        // Ambil data user
+        const userResponse = await axios.get(`${BASE_URL}/api/authsiswa/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-          const userResponse = await axios.get(`${BASE_URL}/api/authsiswa/me`, {
-            headers: { Authorization: `Bearer ${token}` },
+        const { nama, email, nis, nisn, kelas, jurusan } = userResponse.data;
+        setFormData((prevData) => ({
+          ...prevData,
+          nama,
+          email,
+          nis,
+          nisn,
+          kelas,
+          jurusan,
+        }));
+
+        // Cek apakah user sudah mengisi jurnal hari ini
+        // Format tanggal hari ini YYYY-MM-DD
+        const today = new Date().toISOString().split('T')[0];
+        
+        try {
+          // Gunakan axios untuk penanganan error yang lebih baik
+          const jurnalResponse = await axios.get(`${BASE_URL}/api/jurnal`, {
+            headers: { Authorization: `Bearer ${token}` }
           });
+          
+          // Filter jurnal berdasarkan ID siswa dan tanggal
+          if (jurnalResponse.data && Array.isArray(jurnalResponse.data)) {
+            const userJournals = jurnalResponse.data.filter(entry => 
+              entry.id_siswa === userId
+            );
+            
+            const hasSubmittedToday = userJournals.some(entry => {
+              // Ambil tanggal saja dari timestamp
+              const entryDate = new Date(entry.tanggal_pengisian).toISOString().split('T')[0];
+              return entryDate === today;
+            });
 
-          const { nama, email, nis, nisn, kelas, jurusan } = userResponse.data;
-          setFormData((prevData) => ({
-            ...prevData,
-            nama,
-            email,
-            nis,
-            nisn,
-            kelas,
-            jurusan,
-          }));
+            if (hasSubmittedToday) {
+              Swal.fire({
+                title: "Pengisian Dibatasi!",
+                text: "Anda sudah mengisi jurnal hari ini. Silakan kembali besok.",
+                icon: "info",
+                confirmButtonText: "OK",
+                confirmButtonColor: "#3b82f6",
+              }).then(() => {
+                router.push("/");
+              });
+              return;
+            }
+          }
+        } catch (jurnalError) {
+          console.error("Error checking journal entries:", jurnalError);
+          // Jangan blok pengguna jika tidak bisa memeriksa jurnal
+          // Lanjutkan dengan normalisasi halaman
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -109,9 +161,45 @@ export default function UserProfile() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Cek apakah user sudah mengisi jurnal hari ini sebelum submit
+      const today = new Date().toISOString().split('T')[0];
+      try {
+        const jurnalCheckResponse = await axios.get(`${BASE_URL}/api/jurnal`, {
+          headers: { Authorization: `Bearer ${cookies.token}` }
+        });
+        
+        if (jurnalCheckResponse.data && Array.isArray(jurnalCheckResponse.data)) {
+          const userJournals = jurnalCheckResponse.data.filter(entry => 
+            entry.id_siswa === formData.id_siswa
+          );
+          
+          const hasSubmittedToday = userJournals.some(entry => {
+            const entryDate = new Date(entry.tanggal_pengisian).toISOString().split('T')[0];
+            return entryDate === today;
+          });
+
+          if (hasSubmittedToday) {
+            Swal.fire({
+              title: "Pengisian Dibatasi!",
+              text: "Anda sudah mengisi jurnal hari ini. Silakan kembali besok.",
+              icon: "info",
+              confirmButtonText: "OK",
+              confirmButtonColor: "#3b82f6",
+            });
+            return;
+          }
+        }
+      } catch (checkError) {
+        console.error("Error checking journal before submit:", checkError);
+        // Lanjutkan dengan submit, pengecekan gagal tidak menghentikan pengiriman
+      }
+
       const response = await fetch(`${BASE_URL}/api/jurnal`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${cookies.token}`
+        },
         body: JSON.stringify({
           tanggal_pengisian: new Date(),
           nama_pekerjaan: formData.nama_pekerjaan,
@@ -128,18 +216,12 @@ export default function UserProfile() {
       }
 
       setFormData({
+        ...formData,
         tanggal_pengisian: "",
         nama_pekerjaan: "",
         deskripsi_pekerjaan: "",
-        id_siswa: "",
         id_pembimbing: "",
         id_perusahaan: "",
-        nama: "",
-        email: "",
-        nis: "",
-        nisn: "",
-        kelas: "",
-        jurusan: "",
       });
 
       await Swal.fire({
@@ -153,6 +235,13 @@ export default function UserProfile() {
       window.location.reload();
     } catch (error) {
       console.error("Error:", error);
+      Swal.fire({
+        title: "Gagal!",
+        text: error.message || "Terjadi kesalahan saat mengisi jurnal.",
+        icon: "error",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#f44336",
+      });
     }
   };
 

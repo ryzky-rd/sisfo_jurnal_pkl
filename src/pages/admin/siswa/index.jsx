@@ -113,7 +113,7 @@ export default function Siswa() {
 
       // Konversi data agar sesuai dengan format backend
       const formattedData = rawData.map((row) => ({
-        nama_siswa: row.nama || row.Nama || "",
+        nama_lengkap: row.nama || row.Nama || "",
         email: row.email || row.Email || "",
         password: row.password || row.Password || "",
       }));
@@ -130,6 +130,7 @@ export default function Siswa() {
             },
           }
         );
+        console.log("tes: ", response.data)
 
         alert(response.data.message);
       } catch (error) {

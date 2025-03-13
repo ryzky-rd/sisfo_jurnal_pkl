@@ -192,34 +192,34 @@ export default function Pembimbing() {
     setShowUpdateModal(true);
   };
 
+  // Perbaikan pada fungsi handleUpdate
   const handleUpdate = async (e) => {
     e.preventDefault();
-    const dataToSend = {
-      nama_pembimbing: updateData.nama_pembimbing,
-      nip: updateData.nip,
-      email: updateData.email,
-    };
-
-    // Jika ada password baru, tambahkan ke data yang akan dikirim
-    if (updateData.password) {
-      dataToSend.password = updateData.password;
-    }
-
     const formDataToSend = new FormData();
-    formDataToSend.append("nama_pembimbing", dataToSend.nama_pembimbing);
-    formDataToSend.append("nip", dataToSend.nip);
-    formDataToSend.append("email", dataToSend.email);
 
-    // Tambahkan foto jika ada
-    if (formData.foto_pembimbing) {
-      formDataToSend.append("foto", formData.foto_pembimbing);
+    // Append only the fields that have values
+    if (updateData.nama_pembimbing) {
+      formDataToSend.append("nama_pembimbing", updateData.nama_pembimbing);
+    }
+    if (updateData.nip) {
+      formDataToSend.append("nip", updateData.nip);
+    }
+    if (updateData.email) {
+      formDataToSend.append("email", updateData.email);
+    }
+    // Only append password if it's not empty
+    if (updateData.password && updateData.password.trim() !== "") {
+      formDataToSend.append("password", updateData.password);
+    }
+    // Only append foto if it exists
+    if (updateData.foto_pembimbing) {
+      formDataToSend.append("foto", updateData.foto_pembimbing);
     }
 
     try {
       const response = await axios.patch(
         `${BASE_URL}/api/pembimbing/${updateData.id}`,
         formDataToSend,
-        console.log("respomd", formDataToSend), 
         {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -230,11 +230,25 @@ export default function Pembimbing() {
       if (response.status === 200 || response.status === 201) {
         showToastMessage("Data pembimbing berhasil diupdate!");
         setShowUpdateModal(false);
+        setUpdateData({
+          id: "",
+          nama_pembimbing: "",
+          nip: "",
+          email: "",
+          password: "",
+          foto_pembimbing: null,
+        });
         fetchData();
       }
     } catch (error) {
-      console.error("Error updating data:", error);
-      showToastMessage("Gagal mengupdate data", "error");
+      console.error(
+        "Error updating data:",
+        error.response?.data || error.message
+      );
+      showToastMessage(
+        error.response?.data?.message || "Gagal mengupdate data",
+        "error"
+      );
     }
   };
 
@@ -686,10 +700,10 @@ export default function Pembimbing() {
                       id="foto_pembimbing"
                       name="foto_pembimbing"
                       onChange={(e) => {
-                        const { files } = e.target;
-                        setUpdateData((prevData) => ({
-                          ...prevData,
-                          foto_pembimbing: files ? files[0] : null,
+                        const file = e.target.files[0];
+                        setUpdateData((prev) => ({
+                          ...prev,
+                          foto_pembimbing: file,
                         }));
                       }}
                       className="flex items-center w-full h-10 pl-3 mt-2 mb-3 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"

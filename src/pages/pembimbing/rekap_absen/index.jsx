@@ -7,6 +7,41 @@ import { BASE_URL } from "../../../components/layoutsAdmin/apiConfig";
 import { jwtDecode } from "jwt-decode";
 import Head from "next/head";
 
+// Komponen Pagination
+const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+  return (
+    <div className="flex justify-center gap-2 my-4">
+      <button
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="px-3 py-1 text-sm bg-gray-200 rounded-md hover:bg-gray-400"
+      >
+        Prev
+      </button>
+      {Array.from({ length: totalPages }, (_, index) => (
+        <button
+          key={index + 1}
+          onClick={() => onPageChange(index + 1)}
+          className={`px-3 py-1 text-sm rounded-md ${
+            currentPage === index + 1
+              ? "bg-amber-400 hover:bg-amber-500 text-white"
+              : "bg-gray-200 hover:bg-gray-400"
+          }`}
+        >
+          {index + 1}
+        </button>
+      ))}
+      <button
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="px-3 py-1 text-sm bg-gray-200 rounded-md hover:bg-gray-400"
+      >
+        Next
+      </button>
+    </div>
+  );
+};
+
 export default function Rekap_absen() {
   const router = useRouter();
   const [siswaData, setSiswaData] = useState([]);
@@ -14,6 +49,8 @@ export default function Rekap_absen() {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const fetchData = async () => {
     setLoading(true);
@@ -86,6 +123,16 @@ export default function Rekap_absen() {
       : true;
     return matchesSearch;
   });
+
+  const totalPages = Math.ceil(filteredSiswa.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredSiswa.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
 
   return (
     <>
@@ -162,6 +209,11 @@ export default function Rekap_absen() {
               </tbody>
             </table>
           </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
         </div>
       </AdminLayout>
     </>

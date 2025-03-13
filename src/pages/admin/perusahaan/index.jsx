@@ -214,10 +214,10 @@ export default function Perusahaan() {
           </button>
         </div>
 
-        <div className="flex flex-col bg-white rounded-xl items-center">
+        <div className="flex flex-col overflow-x-auto lg:overflow-x-hidden bg-white rounded-xl">
           <div className="sm:-mx-6 w-full">
             <div className="inline-block min-w-full py-2 sm:px-6">
-              <div className="overflow-x-auto lg:overflow-x-hidden">
+              <div className="overflow-x-auto">
                 <table className="min-w-full text-sm font-light text-left">
                   <thead className="font-medium border-b dark:border-neutral-500">
                     <tr>

@@ -336,54 +336,48 @@ export default function Administrators() {
                     )}
                   </tbody>
                 </table>
-
-                {/* pagination */}
-                <div className="flex justify-center gap-5 my-4">
-                  <button
-                    onClick={() =>
-                      setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))
-                    }
-                    disabled={currentPage === 1}
-                    className="px-3 py-1 bg-gray-200 rounded-md hover:bg-gray-400"
-                  >
-                    Prev
-                  </button>
-                  <div className="flex">
-                    {Array.from(
-                      { length: Math.min(totalPages, 5) },
-                      (_, index) => (
-                        <button
-                          key={index}
-                          onClick={
-                            () => setCurrentPage(firstPage + index) // Memperbarui halaman berdasarkan indeks dan halaman pertama yang ditampilkan
-                          }
-                          className={`mx-1 px-3 py-1 rounded-md ${
-                            currentPage === firstPage + index
-                              ? "bg-amber-400 hover:bg-amber-500 text-white"
-                              : "bg-gray-200 hover:bg-gray-400"
-                          }`}
-                        >
-                          {firstPage + index}{" "}
-                          {/* Menggunakan halaman pertama yang ditampilkan */}
-                        </button>
-                      )
-                    )}
-                  </div>
-                  <button
-                    onClick={() =>
-                      setCurrentPage((prevPage) =>
-                        Math.min(prevPage + 1, totalPages)
-                      )
-                    }
-                    disabled={currentPage === totalPages}
-                    className="px-3 py-1 bg-gray-200 rounded-md hover:bg-gray-400"
-                  >
-                    Next
-                  </button>
-                </div>
               </div>
             </div>
           </div>
+        </div>
+        {/* pagination */}
+        <div className="flex justify-center gap-5 my-4">
+          <button
+            onClick={() =>
+              setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))
+            }
+            disabled={currentPage === 1}
+            className="px-3 py-1 bg-gray-200 rounded-md hover:bg-gray-400"
+          >
+            Prev
+          </button>
+          <div className="flex">
+            {Array.from({ length: Math.min(totalPages, 5) }, (_, index) => (
+              <button
+                key={index}
+                onClick={
+                  () => setCurrentPage(firstPage + index) // Memperbarui halaman berdasarkan indeks dan halaman pertama yang ditampilkan
+                }
+                className={`mx-1 px-3 py-1 rounded-md ${
+                  currentPage === firstPage + index
+                    ? "bg-amber-400 hover:bg-amber-500 text-white"
+                    : "bg-gray-200 hover:bg-gray-400"
+                }`}
+              >
+                {firstPage + index}{" "}
+                {/* Menggunakan halaman pertama yang ditampilkan */}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={() =>
+              setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages))
+            }
+            disabled={currentPage === totalPages}
+            className="px-3 py-1 bg-gray-200 rounded-md hover:bg-gray-400"
+          >
+            Next
+          </button>
         </div>
         {/* Modal delete */}
         {showDeleteModal && (
@@ -791,4 +785,4 @@ export default function Administrators() {
       </AdminLayout>
     </>
   );
-};
+}

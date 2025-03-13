@@ -262,184 +262,132 @@ export default function Pembimbing() {
           </button>
         </div>
 
-        <div className="flex flex-col bg-white rounded-xl">
+        <div className="flex flex-col overflow-x-auto lg:overflow-x-hidden bg-white rounded-xl  ">
           <div className="sm:-mx-6 lg:-mx-8">
             <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
-              <div className="overflow-x-auto lg:overflow-x-hidden">
-                {/* Tampilan desktop */}
-                <div className="hidden md:block">
-                  <table className="min-w-full text-sm font-light text-left">
-                    <thead className="font-medium border-b dark:border-neutral-500">
-                      <tr>
-                        <th scope="col" className="px-6 py-4 lg:w-[10%]">
-                          NIP
-                        </th>
-                        <th scope="col" className="px-6 py-4 lg:w-[30%]">
-                          Nama Guru Pembimbing
-                        </th>
-                        <th scope="col" className="px-6 py-4 lg:w-[15%]">
-                          Email
-                        </th>
-                        <th scope="col" className="px-6 py-4 lg:w-[20%]">
-                          Foto
-                        </th>
-                        <th scope="col" className="px-6 py-4 lg:w-[15%]">
-                          Action
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {pembimbing && pembimbing.length > 0 ? (
-                        pembimbing.map((item) => (
-                          <tr
-                            className="border-b dark:border-neutral-500"
-                            key={item.id}
-                          >
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              {item.nip || "NIP tidak tersedia"}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              {item.nama_pembimbing || "Nama tidak tersedia"}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              {item.email || "Email tidak tersedia"}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              {item.url_foto_pembimbing ? (
-                                <img
-                                  src={item.url_foto_pembimbing}
-                                  alt="Foto Pembimbing"
-                                  className="w-16 h-16 object-cover"
-                                />
-                              ) : (
-                                "Foto tidak tersedia"
-                              )}
-                            </td>
-                            <td className="flex items-center gap-1 px-6 py-4 whitespace-nowrap">
-                              {/* Tombol update */}
-                              <button onClick={() => handleEdit(item)}>
-                                <div
-                                  className="items-center w-auto px-5 py-2 mb-2 tracking-wider text-white rounded-full shadow-sm bg-amber-400 hover:bg-amber-500"
-                                  aria-label="edit"
-                                >
-                                  <i className="fa-solid fa-pen"></i>
-                                </div>
-                              </button>
-
-                              {/* Tombol delete */}
-                              <button
-                                onClick={() => {
-                                  toggleModalDelete();
-                                  setItemIdToDelete(item.id);
-                                }}
-                                className="items-center w-auto px-5 py-2 mb-2 tracking-wider text-white rounded-full shadow-sm bg-amber-400 hover:bg-amber-500"
-                                aria-label="delete"
-                              >
-                                <i className="fa-solid fa-trash"></i>
-                              </button>
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan={7} className="text-center py-4">
-                            Data tidak tersedia
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-sm font-light text-left">
+                  <thead className="font-medium border-b dark:border-neutral-500">
+                    <tr>
+                      <th scope="col" className="px-6 py-4 lg:w-[10%]">
+                        NIP
+                      </th>
+                      <th scope="col" className="px-6 py-4 lg:w-[30%]">
+                        Nama Guru Pembimbing
+                      </th>
+                      <th scope="col" className="px-6 py-4 lg:w-[15%]">
+                        Email
+                      </th>
+                      <th scope="col" className="px-6 py-4 lg:w-[20%]">
+                        Foto
+                      </th>
+                      <th scope="col" className="px-6 py-4 lg:w-[15%]">
+                        Action
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pembimbing && pembimbing.length > 0 ? (
+                      pembimbing.map((item) => (
+                        <tr
+                          className="border-b dark:border-neutral-500"
+                          key={item.id}
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {item.nip || "NIP tidak tersedia"}
                           </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-
-                {/* Tampilan mobile */}
-                <div className="grid grid-cols-1 gap-4 md:hidden">
-                  {pembimbing && pembimbing.length > 0 ? (
-                    pembimbing.map((item) => (
-                      <div
-                        key={item.id}
-                        className="p-4 bg-white rounded-lg shadow"
-                      >
-                        <div className="space-y-2">
-                          <div className="flex justify-between">
-                            <span className="font-bold">Nama:</span>
-                            <span>
-                              {item.nama_pembimbing || "Nama tidak tersedia"}
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="font-bold">Email:</span>
-                            <span>{item.email || "Email tidak tersedia"}</span>
-                          </div>
-                          <div className="flex justify-center gap-2 mt-4">
-                            <button
-                              onClick={() => handleEdit(item)}
-                              className="px-4 py-2 text-white rounded-full bg-amber-400 hover:bg-amber-500"
-                            >
-                              <i className="fa-solid fa-pen"></i>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {item.nama_pembimbing || "Nama tidak tersedia"}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {item.email || "Email tidak tersedia"}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {item.url_foto_pembimbing ? (
+                              <img
+                                src={item.url_foto_pembimbing}
+                                alt="Foto Pembimbing"
+                                className="w-16 h-16 object-cover"
+                              />
+                            ) : (
+                              "Foto tidak tersedia"
+                            )}
+                          </td>
+                          <td className="flex items-center gap-1 px-6 py-4 whitespace-nowrap">
+                            {/* Tombol update */}
+                            <button onClick={() => handleEdit(item)}>
+                              <div
+                                className="items-center w-auto px-5 py-2 mb-2 tracking-wider text-white rounded-full shadow-sm bg-amber-400 hover:bg-amber-500"
+                                aria-label="edit"
+                              >
+                                <i className="fa-solid fa-pen"></i>
+                              </div>
                             </button>
+
+                            {/* Tombol delete */}
                             <button
                               onClick={() => {
                                 toggleModalDelete();
                                 setItemIdToDelete(item.id);
                               }}
-                              className="px-4 py-2 text-white rounded-full bg-amber-400 hover:bg-amber-500"
+                              className="items-center w-auto px-5 py-2 mb-2 tracking-wider text-white rounded-full shadow-sm bg-amber-400 hover:bg-amber-500"
+                              aria-label="delete"
                             >
                               <i className="fa-solid fa-trash"></i>
                             </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="p-4 text-center">Data tidak tersedia</div>
-                  )}
-                </div>
-
-                {/* Pagination */}
-                <div className="flex justify-center gap-2 my-4">
-                  <button
-                    onClick={() =>
-                      setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))
-                    }
-                    disabled={currentPage === 1}
-                    className="px-3 py-1 text-sm bg-gray-200 rounded-md hover:bg-gray-400"
-                  >
-                    Prev
-                  </button>
-                  <div className="flex gap-1">
-                    {Array.from(
-                      { length: Math.min(totalPages, 5) },
-                      (_, index) => (
-                        <button
-                          key={index}
-                          onClick={() => setCurrentPage(firstPage + index)}
-                          className={`mx-1 px-3 py-1 text-sm rounded-md ${
-                            currentPage === firstPage + index
-                              ? "bg-amber-400 hover:bg-amber-500 text-white"
-                              : "bg-gray-200 hover:bg-gray-400"
-                          }`}
-                        >
-                          {firstPage + index}
-                        </button>
-                      )
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={7} className="text-center py-4">
+                          Data tidak tersedia
+                        </td>
+                      </tr>
                     )}
-                  </div>
-                  <button
-                    onClick={() =>
-                      setCurrentPage((prevPage) =>
-                        Math.min(prevPage + 1, totalPages)
-                      )
-                    }
-                    disabled={currentPage === totalPages}
-                    className="px-3 py-1 text-sm bg-gray-200 rounded-md hover:bg-gray-400"
-                  >
-                    Next
-                  </button>
-                </div>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
         </div>
+        {/* Pagination */}
+        <div className="flex justify-center gap-2 my-4">
+          <button
+            onClick={() =>
+              setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))
+            }
+            disabled={currentPage === 1}
+            className="px-3 py-1 text-sm bg-gray-200 rounded-md hover:bg-gray-400"
+          >
+            Prev
+          </button>
+          <div className="flex gap-1">
+            {Array.from({ length: Math.min(totalPages, 5) }, (_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentPage(firstPage + index)}
+                className={`mx-1 px-3 py-1 text-sm rounded-md ${
+                  currentPage === firstPage + index
+                    ? "bg-amber-400 hover:bg-amber-500 text-white"
+                    : "bg-gray-200 hover:bg-gray-400"
+                }`}
+              >
+                {firstPage + index}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={() =>
+              setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages))
+            }
+            disabled={currentPage === totalPages}
+            className="px-3 py-1 text-sm bg-gray-200 rounded-md hover:bg-gray-400"
+          >
+            Next
+          </button>
+        </div>
+
         {/* Modal delete */}
         {showDeleteModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -794,6 +742,4 @@ export default function Pembimbing() {
       </AdminLayout>
     </>
   );
-};
-
-
+}

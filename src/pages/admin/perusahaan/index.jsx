@@ -10,6 +10,41 @@ import { parseCookies } from "nookies";
 import { useRouter } from "next/router";
 import { BASE_URL } from "../../../components/layoutsAdmin/apiConfig";
 
+// Komponen Pagination
+const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+  return (
+    <div className="flex justify-center gap-2 my-4">
+      <button
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="px-3 py-1 text-sm bg-gray-200 rounded-md hover:bg-gray-400"
+      >
+        Prev
+      </button>
+      {Array.from({ length: totalPages }, (_, index) => (
+        <button
+          key={index + 1}
+          onClick={() => onPageChange(index + 1)}
+          className={`px-3 py-1 text-sm rounded-md ${
+            currentPage === index + 1
+              ? "bg-amber-400 hover:bg-amber-500 text-white"
+              : "bg-gray-200 hover:bg-gray-400"
+          }`}
+        >
+          {index + 1}
+        </button>
+      ))}
+      <button
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="px-3 py-1 text-sm bg-gray-200 rounded-md hover:bg-gray-400"
+      >
+        Next
+      </button>
+    </div>
+  );
+};
+
 export default function Perusahaan() {
   const [allPerusahaan, setAllPerusahaan] = useState([]);
   const router = useRouter();
@@ -18,15 +53,15 @@ export default function Perusahaan() {
   const [error, setError] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [itemIdToDelete, setItemIdToDelete] = useState(null);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
-  
+
   // add data
   const [formData, setFormData] = useState({
     nama_perusahaan: "",
@@ -58,14 +93,15 @@ export default function Perusahaan() {
         item.pembimbing_perusahaan.toLowerCase().includes(searchTerm.toLowerCase())
       );
 
-      const paginatedData = filteredData.slice(
-        (currentPage - 1) * pageSize,
-        currentPage * pageSize
-      );
-
-      setPerusahaan(paginatedData);
+      const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+      setTotalPages(totalPages);
       setTotalCount(filteredData.length);
-      setTotalPages(Math.ceil(filteredData.length / pageSize));
+
+      const indexOfLastItem = currentPage * itemsPerPage;
+      const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+      const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+
+      setPerusahaan(currentItems);
     } catch (error) {
       console.error("Error fetching data perusahaan:", error);
       setError(error.response ? error.response.data : error);
@@ -81,6 +117,10 @@ export default function Perusahaan() {
   const handleSearchInputChange = (e) => {
     setSearchTerm(e.target.value);
     setCurrentPage(1);
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
 
   const handleSubmit = async (e) => {
@@ -187,8 +227,6 @@ export default function Perusahaan() {
     );
   }
 
-  const firstPage = Math.max(1, currentPage - 4);
-
   return (
     <>
       <Head>
@@ -220,7 +258,7 @@ export default function Perusahaan() {
               <div className="overflow-x-auto">
                 <table className="min-w-full text-sm font-light text-left">
                   <thead className="font-medium border-b dark:border-neutral-500">
-                    <tr>
+                    <tr className="text-center">
                       <th scope="col" className="px-6 py-4">Nama Perusahaan</th>
                       <th scope="col" className="px-6 py-4">Bidang Perusahaan</th>
                       <th scope="col" className="px-6 py-4">Alamat Perusahaan</th>
@@ -231,7 +269,7 @@ export default function Perusahaan() {
                   <tbody>
                     {perusahaan && perusahaan.length > 0 ? (
                       perusahaan.map((item) => (
-                        <tr className="border-b dark:border-neutral-500" key={item.id}>
+                        <tr className="border-b dark:border-neutral-500 text-center" key={item.id}>
                           <td className="px-6 py-4 whitespace-nowrap">
                             {item.nama_perusahaan || "Nama tidak tersedia"}
                           </td>
@@ -244,7 +282,7 @@ export default function Perusahaan() {
                           <td className="px-6 py-4 whitespace-nowrap">
                             {item.pembimbing_perusahaan || "Nama tidak tersedia"}
                           </td>
-                          <td className="flex items-center gap-1 px-6 py-4 whitespace-nowrap">
+                          <td className="px-6 py-4 whitespace-nowrap">
                             <button onClick={() => handleEdit(item)}>
                               <div
                                 className="items-center w-auto px-5 py-2 mb-2 tracking-wider text-white rounded-full shadow-sm bg-amber-400 hover:bg-amber-500"
@@ -276,6 +314,12 @@ export default function Perusahaan() {
                   </tbody>
                 </table>
               </div>
+              {/* Tambahkan Pagination di sini */}
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
             </div>
           </div>
         </div>

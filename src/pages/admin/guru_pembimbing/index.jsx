@@ -195,8 +195,8 @@ export default function Pembimbing() {
   const handleUpdate = async (e) => {
     e.preventDefault();
     const dataToSend = {
-      nip: updateData.nip,
       nama_pembimbing: updateData.nama_pembimbing,
+      nip: updateData.nip,
       email: updateData.email,
     };
 
@@ -206,8 +206,8 @@ export default function Pembimbing() {
     }
 
     const formDataToSend = new FormData();
-    formDataToSend.append("nip", dataToSend.nip);
     formDataToSend.append("nama_pembimbing", dataToSend.nama_pembimbing);
+    formDataToSend.append("nip", dataToSend.nip);
     formDataToSend.append("email", dataToSend.email);
 
     // Tambahkan foto jika ada
@@ -219,6 +219,7 @@ export default function Pembimbing() {
       const response = await axios.patch(
         `${BASE_URL}/api/pembimbing/${updateData.id}`,
         formDataToSend,
+        console.log("respomd", formDataToSend), 
         {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -794,6 +795,4 @@ export default function Pembimbing() {
       </AdminLayout>
     </>
   );
-};
-
-
+}

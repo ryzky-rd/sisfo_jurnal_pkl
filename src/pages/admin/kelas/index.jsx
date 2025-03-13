@@ -18,15 +18,50 @@ export default function Kelas() {
   const [error, setError] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [itemIdToDelete, setItemIdToDelete] = useState(null);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
-  
+
+  // Komponen Pagination
+const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+  return (
+    <div className="flex justify-center gap-2 my-4">
+      <button
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="px-3 py-1 text-sm bg-gray-200 rounded-md hover:bg-gray-400"
+      >
+        Prev
+      </button>
+      {Array.from({ length: totalPages }, (_, index) => (
+        <button
+          key={index + 1}
+          onClick={() => onPageChange(index + 1)}
+          className={`px-3 py-1 text-sm rounded-md ${
+            currentPage === index + 1
+              ? "bg-amber-400 hover:bg-amber-500 text-white"
+              : "bg-gray-200 hover:bg-gray-400"
+          }`}
+        >
+          {index + 1}
+        </button>
+      ))}
+      <button
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="px-3 py-1 text-sm bg-gray-200 rounded-md hover:bg-gray-400"
+      >
+        Next
+      </button>
+    </div>
+  );
+};
+
   // add data
   const [formData, setFormData] = useState({
     nama_kelas: "",
@@ -42,21 +77,27 @@ export default function Kelas() {
     setLoading(true);
     try {
       const response = await axios.get(`${BASE_URL}/api/kelas`);
-      const data = Array.isArray(response.data) ? response.data : response.data.data;
+      const data = Array.isArray(response.data)
+        ? response.data
+        : response.data.data;
       setAllKelas(data);
 
       const filteredData = data.filter((item) =>
         item.nama_kelas.toLowerCase().includes(searchTerm.toLowerCase())
       );
 
-      const paginatedData = filteredData.slice(
-        (currentPage - 1) * pageSize,
-        currentPage * pageSize
+      const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+      setTotalPages(totalPages);
+      setTotalCount(filteredData.length);
+
+      const indexOfLastItem = currentPage * itemsPerPage;
+      const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+      const currentItems = filteredData.slice(
+        indexOfFirstItem,
+        indexOfLastItem
       );
 
-      setKelas(paginatedData);
-      setTotalCount(filteredData.length);
-      setTotalPages(Math.ceil(filteredData.length / pageSize));
+      setKelas(currentItems);
     } catch (error) {
       console.error("Error fetching data kelas:", error);
       setError(error.response ? error.response.data : error);
@@ -74,6 +115,10 @@ export default function Kelas() {
     setCurrentPage(1);
   };
 
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -82,7 +127,10 @@ export default function Kelas() {
         nama_kelas: formData.nama_kelas,
       };
 
-      const response = await axios.post(`${BASE_URL}/api/kelas`, formDataToSend);
+      const response = await axios.post(
+        `${BASE_URL}/api/kelas`,
+        formDataToSend
+      );
 
       if (response.status === 200 || response.status === 201) {
         toast.success("Data berhasil ditambahkan!");
@@ -118,8 +166,8 @@ export default function Kelas() {
         dataToSend,
         {
           headers: {
-            'Content-Type': 'application/json',
-          }
+            "Content-Type": "application/json",
+          },
         }
       );
 
@@ -131,8 +179,8 @@ export default function Kelas() {
     } catch (error) {
       console.error("Error updating data:", error);
       toast.error(
-        error.response?.data?.message || 
-        "Gagal mengupdate data. Silakan coba lagi."
+        error.response?.data?.message ||
+          "Gagal mengupdate data. Silakan coba lagi."
       );
     }
   };
@@ -166,8 +214,6 @@ export default function Kelas() {
     );
   }
 
-  const firstPage = Math.max(1, currentPage - 4);
-
   return (
     <>
       <Head>
@@ -199,19 +245,26 @@ export default function Kelas() {
               <div className="overflow-x-auto">
                 <table className="min-w-full text-sm font-light text-left">
                   <thead className="font-medium border-b dark:border-neutral-500">
-                    <tr>
-                      <th scope="col" className="px-6 py-4">Nama Kelas</th>
-                      <th scope="col" className="px-6 py-4">Action</th>
+                    <tr className="text-center">
+                      <th scope="col" className="px-6 py-4">
+                        Nama Kelas
+                      </th>
+                      <th scope="col" className="px-6 py-4">
+                        Action
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {kelas && kelas.length > 0 ? (
                       kelas.map((item) => (
-                        <tr className="border-b dark:border-neutral-500" key={item.id}>
+                        <tr
+                          className="border-b dark:border-neutral-500 text-center"
+                          key={item.id}
+                        >
                           <td className="px-6 py-4 whitespace-nowrap">
                             {item.nama_kelas || "Nama tidak tersedia"}
                           </td>
-                          <td className="flex items-center gap-1 px-6 py-4 whitespace-nowrap">
+                          <td className="px-6 py-4 whitespace-nowrap">
                             <button onClick={() => handleEdit(item)}>
                               <div
                                 className="items-center w-auto px-5 py-2 mb-2 tracking-wider text-white rounded-full shadow-sm bg-amber-400 hover:bg-amber-500"
@@ -243,6 +296,12 @@ export default function Kelas() {
                   </tbody>
                 </table>
               </div>
+              {/* Tambahkan Pagination di sini */}
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
             </div>
           </div>
         </div>
@@ -304,7 +363,9 @@ export default function Kelas() {
                     id="nama_kelas"
                     name="nama_kelas"
                     value={formData.nama_kelas}
-                    onChange={(e) => setFormData({ ...formData, nama_kelas: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, nama_kelas: e.target.value })
+                    }
                     className="flex items-center w-full h-10 pl-3 mt-2 mb-3 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
                     placeholder="Nama Kelas"
                     required
@@ -354,7 +415,12 @@ export default function Kelas() {
                     id="nama_kelas"
                     name="nama_kelas"
                     value={updateData.nama_kelas}
-                    onChange={(e) => setUpdateData({ ...updateData, nama_kelas: e.target.value })}
+                    onChange={(e) =>
+                      setUpdateData({
+                        ...updateData,
+                        nama_kelas: e.target.value,
+                      })
+                    }
                     className="flex items-center w-full h-10 pl-3 mt-2 mb-3 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
                     placeholder="Nama Kelas"
                   />
@@ -382,4 +448,4 @@ export default function Kelas() {
       </AdminLayout>
     </>
   );
-};
+}

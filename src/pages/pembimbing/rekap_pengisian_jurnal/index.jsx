@@ -7,6 +7,41 @@ import { BASE_URL } from "../../../components/layoutsAdmin/apiConfig";
 import { jwtDecode } from "jwt-decode";
 import Head from "next/head";
 
+// Komponen Pagination
+const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+  return (
+    <div className="flex justify-center gap-2 my-4">
+      <button
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="px-3 py-1 text-sm bg-gray-200 rounded-md hover:bg-gray-400"
+      >
+        Prev
+      </button>
+      {Array.from({ length: totalPages }, (_, index) => (
+        <button
+          key={index + 1}
+          onClick={() => onPageChange(index + 1)}
+          className={`px-3 py-1 text-sm rounded-md ${
+            currentPage === index + 1
+              ? "bg-amber-400 hover:bg-amber-500 text-white"
+              : "bg-gray-200 hover:bg-gray-400"
+          }`}
+        >
+          {index + 1}
+        </button>
+      ))}
+      <button
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="px-3 py-1 text-sm bg-gray-200 rounded-md hover:bg-gray-400"
+      >
+        Next
+      </button>
+    </div>
+  );
+};
+
 const Rekap_pengisian_jurnal = ({ isLoggedIn }) => {
   const router = useRouter();
   const [jurnal, setJurnal] = useState([]);
@@ -14,6 +49,8 @@ const Rekap_pengisian_jurnal = ({ isLoggedIn }) => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const fetchData = async () => {
     setLoading(true);
@@ -61,6 +98,15 @@ const Rekap_pengisian_jurnal = ({ isLoggedIn }) => {
     return matchesSearch && matchesMonth;
   });
 
+  const totalPages = Math.ceil(filteredJurnal.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredJurnal.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
   return (
     <>
       <Head>
@@ -107,8 +153,8 @@ const Rekap_pengisian_jurnal = ({ isLoggedIn }) => {
                 </tr>
               </thead>
               <tbody>
-                {filteredJurnal.length > 0 ? (
-                  filteredJurnal.map((item) => (
+                {currentItems.length > 0 ? (
+                  currentItems.map((item) => (
                     <tr className="border-b" key={item.id}>
                       <td className="px-6 py-4 text-center">
                         {item.tanggal_pengisian
@@ -149,6 +195,11 @@ const Rekap_pengisian_jurnal = ({ isLoggedIn }) => {
               </tbody>
             </table>
           </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
         </div>
       </AdminLayout>
     </>

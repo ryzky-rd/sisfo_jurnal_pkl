@@ -18,7 +18,7 @@ const CekRole = () => {
       if (!token) {
         Swal.fire({
           title: "Session Expired",
-          text: "Silakan login kembali.",
+          text: "Silahkan login kembali.",
           icon: "warning",
           confirmButtonText: "OK",
           confirmButtonColor: "#dc2626", // Warna merah
@@ -48,7 +48,7 @@ const CekRole = () => {
         console.error("Error checking token:", error);
         Swal.fire({
           title: "Session Expired",
-          text: "Silakan login kembali sebagai pembimbing.",
+          text: "Silahkan login kembali.",
           icon: "error",
           confirmButtonText: "OK",
           confirmButtonColor: "#dc2626", // Warna merah

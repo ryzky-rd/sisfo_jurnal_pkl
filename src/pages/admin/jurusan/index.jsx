@@ -301,8 +301,176 @@ export default function Jurusan() {
           </div>
         </div>
 
-        {/* Modal untuk delete, add, dan update */}
-        {/* ... (kode modal tetap sama) ... */}
+        {showDeleteModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="fixed inset-0 transition-opacity">
+              <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            <div className="relative w-full max-w-md transition transform bg-white rounded-lg shadow-xl">
+              <div className="px-4 py-5 sm:px-6">
+                <h3 className="text-lg font-medium leading-6 text-gray-900">
+                  Delete Jurusan
+                </h3>
+                <p className="max-w-2xl mt-1 text-sm text-gray-500">
+                  Apakah Anda yakin ingin menghapus data ini?
+                </p>
+              </div>
+              <div className="px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  className="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-red-500 border border-transparent rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
+                >
+                  Delete
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowDeleteModal(false)}
+                  className="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="fixed inset-0 bg-gray-500 opacity-75"></div>
+            <div
+              role="alert"
+              className="container w-11/12 max-w-lg mx-auto md:w-2/3"
+            >
+              <div className="relative px-5 py-8 bg-white border border-gray-400 rounded shadow-md md:px-10">
+                <h1 className="mb-4 font-bold leading-tight tracking-normal text-gray-800 font-lg">
+                  Add Jurusan
+                </h1>
+                <form onSubmit={handleSubmit}>
+                  <label
+                    htmlFor="nama_jurusan"
+                    className="text-sm font-bold leading-tight tracking-normal text-gray-800"
+                  >
+                    Nama Jurusan
+                  </label>
+                  <input
+                    type="text"
+                    id="nama_jurusan"
+                    name="nama_jurusan"
+                    value={formData.nama_jurusan}
+                    onChange={(e) => setFormData({ ...formData, nama_jurusan: e.target.value })}
+                    className="flex items-center w-full h-10 pl-3 mt-2 mb-3 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
+                    placeholder="Nama Jurusan"
+                    required
+                  />
+
+                  <div>
+                    <label
+                      htmlFor="deskripsi_jurusan"
+                      className="text-sm font-bold leading-tight tracking-normal text-gray-800"
+                    >
+                      Deskripsi Jurusan
+                    </label>
+                    <input
+                      type="text"
+                      id="deskripsi_jurusan"
+                      name="deskripsi_jurusan"
+                      value={formData.deskripsi_jurusan}
+                      onChange={(e) => setFormData({ ...formData, deskripsi_jurusan: e.target.value })}
+                      className="flex items-center w-full h-10 pl-3 mt-2 mb-3 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
+                      placeholder="Deskripsi Jurusan"
+                      required
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-start w-full">
+                    <button
+                      type="submit"
+                      className="px-8 py-2 text-sm text-white transition duration-150 ease-in-out bg-indigo-700 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-700 hover:bg-indigo-600"
+                    >
+                      Submit
+                    </button>
+                    <button
+                      type="button"
+                      className="px-8 py-2 ml-3 text-sm text-gray-600 transition duration-150 ease-in-out bg-gray-100 border rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 hover:border-gray-400 hover:bg-gray-300"
+                      onClick={() => setShowModal(false)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showUpdateModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="fixed inset-0 bg-gray-500 opacity-75"></div>
+            <div
+              role="alert"
+              className="container w-11/12 max-w-lg mx-auto mt-5 mb-5 md:w-2/3"
+            >
+              <div className="relative px-5 py-8 bg-white border border-gray-400 rounded shadow-md md:px-10">
+                <h1 className="mb-4 font-bold leading-tight tracking-normal text-gray-800 font-lg">
+                  Update Jurusan
+                </h1>
+                <form onSubmit={handleUpdate}>
+                  <label
+                    htmlFor="nama_jurusan"
+                    className="text-sm font-bold leading-tight tracking-normal text-gray-800"
+                  >
+                    Nama Jurusan
+                  </label>
+                  <input
+                    type="text"
+                    id="nama_jurusan"
+                    name="nama_jurusan"
+                    value={updateData.nama_jurusan}
+                    onChange={(e) => setUpdateData({ ...updateData, nama_jurusan: e.target.value })}
+                    className="flex items-center w-full h-10 pl-3 mt-2 mb-3 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
+                    placeholder="Nama Jurusan"
+                  />
+
+                  <div>
+                    <label
+                      htmlFor="deskripsi_jurusan"
+                      className="text-sm font-bold leading-tight tracking-normal text-gray-800"
+                    >
+                      Deskripsi Jurusan
+                    </label>
+                    <input
+                      type="text"
+                      id="deskripsi_jurusan"
+                      name="deskripsi_jurusan"
+                      value={updateData.deskripsi_jurusan}
+                      onChange={(e) => setUpdateData({ ...updateData, deskripsi_jurusan: e.target.value })}
+                      className="flex items-center w-full h-10 pl-3 mt-2 mb-3 text-sm font-normal text-gray-600 border border-gray-300 rounded focus:outline-none focus:border focus:border-indigo-700"
+                      placeholder="Deskripsi Jurusan"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-start w-full">
+                    <button
+                      type="submit"
+                      className="px-8 py-2 text-sm text-white transition duration-150 ease-in-out bg-indigo-700 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-700 hover:bg-indigo-600"
+                    >
+                      Submit
+                    </button>
+                    <button
+                      type="button"
+                      className="px-8 py-2 ml-3 text-sm text-gray-600 transition duration-150 ease-in-out bg-gray-100 border rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 hover:border-gray-400 hover:bg-gray-300"
+                      onClick={() => setShowUpdateModal(false)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
+
       </AdminLayout>
     </>
   );
